@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9" : 0,
+    "D84BD26F743884FF59122713FBEC291661F56C20" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "713C23D1-8DA4-4298-B32E-BC984EDEDC8F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9" : "RangeSelector\/",
+    "D84BD26F743884FF59122713FBEC291661F56C20" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Calendar",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Calendar\/Calendar\/Calendar.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/shreesha-kedilaya\/My-Major-works.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/ShreeshaKedlaya\/range-selector.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D84BD26F743884FF59122713FBEC291661F56C20"
+    }
+  ]
+}
