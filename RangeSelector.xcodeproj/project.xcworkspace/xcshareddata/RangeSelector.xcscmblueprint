@@ -1,15 +1,17 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9",
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "B1B19987A45D3F85A0530C1A30CE6DBD193BF28A",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9" : 0,
+    "B1B19987A45D3F85A0530C1A30CE6DBD193BF28A" : 0,
     "D84BD26F743884FF59122713FBEC291661F56C20" : 0
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E89CB024-0B39-4367-B1FA-A21B1C27F225",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9" : "RangeSelector\/",
+    "B1B19987A45D3F85A0530C1A30CE6DBD193BF28A" : "My%20Pro\/",
     "D84BD26F743884FF59122713FBEC291661F56C20" : ""
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "RangeSelector",
@@ -20,6 +22,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/shreesha-kedilaya\/My-Major-works.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5D0E2B7A8CE41C81AF29D6E2BC24ECF69D9884C9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/shreesha-kedilaya\/My-Pro.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B1B19987A45D3F85A0530C1A30CE6DBD193BF28A"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/ShreeshaKedlaya\/range-selector.git",

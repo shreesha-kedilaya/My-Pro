@@ -21,7 +21,7 @@ class BookListViewController: UIViewController {
         initialAppearence()
         viewModel.fetchAllData{
             self.updateTheUI()
-            self.viewModel.currentBooks = self.viewModel.books
+            self.viewModel.currentBooks = self.viewModel.allBooks
         }
     }
 
@@ -30,7 +30,7 @@ class BookListViewController: UIViewController {
         if segue.identifier == "UserBooksNavigationController" {
             let userBookListNVC = segue.destinationViewController as? UINavigationController
             let userBookListVC = userBookListNVC?.visibleViewController as? UserBooksViewController
-            if let ownedBooks = viewModel.getAllOwnedBooks() {
+            if let ownedBooks = viewModel.userBooks {
                 userBookListVC?.viewModel.ownedBooks = ownedBooks
             }
             userBookListVC?.viewModel.user = viewModel.user
@@ -59,7 +59,7 @@ class BookListViewController: UIViewController {
 
             switch self.profileHeaderView.selectedSegment {
             case .AllBooks:
-                self.viewModel.currentBooks = self.viewModel.books
+                self.viewModel.currentBooks = self.viewModel.allBooks
             case .Read:
                 self.viewModel.currentBooks = self.viewModel.readList
             case .Wish:
@@ -158,7 +158,7 @@ extension BookListViewController : ProfileHeaderViewDelegate {
 
         switch segment {
         case .AllBooks:
-            viewModel.currentBooks = viewModel.books
+            viewModel.currentBooks = viewModel.allBooks
         case .Read:
             viewModel.currentBooks = viewModel.readList
         case .Wish:
@@ -168,6 +168,7 @@ extension BookListViewController : ProfileHeaderViewDelegate {
         updateTheUI()
     }
 }
+
 extension BookListViewController : BookListTableViewCellDelegate {
 
     func bookListTableViewCellDidSelectNextButtonAt(index: Int) {

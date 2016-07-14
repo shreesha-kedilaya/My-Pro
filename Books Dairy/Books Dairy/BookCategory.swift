@@ -12,6 +12,17 @@ import CoreData
 
 class BookCategory: NSManagedObject {
 
-// Insert code here to add functionality to your managed object subclass
+    var readingListCategoty: ReadingCategory? {
+        get {
+            if let readingCategory = category {
+                return ReadingCategory(rawValue: readingCategory as Int)
+            } else {
+                return ReadingCategory.None
+            }
+        }
+        set {
+            self.category = newValue?.rawValue
+        }
+    }
 
 }

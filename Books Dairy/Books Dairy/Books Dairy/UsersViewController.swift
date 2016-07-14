@@ -15,7 +15,7 @@ class UsersViewController: UIViewController {
     var viewModel = UserViewModel()
 
     private let refreshaControl = UIRefreshControl()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         initialAppearence()
@@ -47,7 +47,7 @@ class UsersViewController: UIViewController {
 
     func refresh() {
         refreshaControl.beginRefreshing()
-        viewModel.fetchUsers { 
+        viewModel.fetchUsers {
             self.refreshaControl.endRefreshing()
             self.usersTableView.reloadData()
         }
@@ -67,7 +67,7 @@ extension UsersViewController: UITableViewDataSource{
             return 0
         }
 
-        
+
     }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("UsersTableViewCell", forIndexPath: indexPath) as? UsersTableViewCell

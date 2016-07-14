@@ -7,15 +7,14 @@
 //
 
 import Foundation
-//
+
 //var readingListCategoty: ReadingCategory? {
 //get {
 //    if let readingCategory = category {
-//        return ReadingCategory(rawValue: readingCategory)
+//        return ReadingCategory(rawValue: readingCategory as Int)
 //    } else {
 //        return ReadingCategory.None
 //    }
-//
 //}
 //set {
 //    self.category = newValue?.rawValue

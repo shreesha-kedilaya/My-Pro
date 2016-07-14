@@ -13,7 +13,7 @@ class BookListViewModel{
     var user : User?
     var readList : [Book]?
     var wishList : [Book]?
-    var books : [Book]?
+    var allBooks : [Book]?
     var userBooks: [Book]?
 
     var currentBooks : [Book]?
@@ -45,19 +45,19 @@ class BookListViewModel{
 
     private func fetchReadList(context : NSManagedObjectContext) {
 
-//        let readBooks = userBooks?.filter({ (book) -> Bool in
-//            if let reading = book.readingListCategoty {
-//                if reading == .ReadList {
-//                    return true
-//                } else {
-//                    return false
-//                }
-//            } else {
-//                return false
-//            }
-//        })
-
-        self.readList = userBooks
+        readList = []
+        let readingCategories : [BookCategory]? = context.executeTheFetchRequest(nil) {
+            if let userId = self.user?.userId {
+                $0.predicate = NSPredicate(format: "userId == %@ AND category == %d", userId, BookCategory.ReadingCategory.ReadList.rawValue)
+            }
+        }
+        if let readingCategories = readingCategories {
+            for category in readingCategories {
+                if let book = category.book {
+                    readList?.append(book)
+                }
+            }
+        }
 
         let sortedArray = readList?.sort({ (book1, book2) -> Bool in
             if let timestamp1 = book1.timeStamp as? Double, timestamp2 = book2.timeStamp as? Double {
@@ -67,29 +67,24 @@ class BookListViewModel{
             }
         })
 
-        self.readList = sortedArray
+        readList = sortedArray
     }
 
     private func fetchWishList(context:NSManagedObjectContext) {
-//        let wishBooks = userBooks?.filter({ (book) -> Bool in
-//            if let reading = book.readingListCategoty {
-//                if reading == .WishList {
-//                    return true
-//                } else {
-//                    return false
-//                }
-//            } else {
-//                return false
-//            }
-//        })
 
-        let wishCategory : [BookCategory]? = context.executeTheFetchRequest(nil) {
+        wishList = []
+        let readingCategories : [BookCategory]? = context.executeTheFetchRequest(nil) {
             if let userId = self.user?.userId {
-                $0.predicate = NSPredicate(format: "userId == %@", userId)
+                $0.predicate = NSPredicate(format: "userId == %@ AND category == %d", userId, BookCategory.ReadingCategory.WishList.rawValue)
             }
         }
-
-        self.wishList = userBooks
+        if let readingCategories = readingCategories {
+            for category in readingCategories {
+                if let book = category.book {
+                    self.wishList?.append(book)
+                }
+            }
+        }
 
         let sortedArray = wishList?.sort({ (book1, book2) -> Bool in
             if let timestamp1 = book1.timeStamp as? Double, timestamp2 = book2.timeStamp as? Double {
@@ -98,8 +93,7 @@ class BookListViewModel{
                 return false
             }
         })
-
-        self.wishList = sortedArray
+        wishList = sortedArray
     }
 
     private func fetchAllBooks(context: NSManagedObjectContext, completion : ViewModelCompletion) {
@@ -112,23 +106,11 @@ class BookListViewModel{
             }
         })
         context.performBlockAndWait { 
-            self.books = sortedArray
+            self.allBooks = sortedArray
             completion()
         }
     }
 
-    func getAllOwnedBooks() -> [Book]? {
-
-        let ownedBooks = books?.filter({ (book) -> Bool in
-            if book.authorId == self.user?.userId {
-                return true
-            } else {
-                return false
-            }
-        })
-
-        return ownedBooks
-    }
     func addToReadList(book : Book, completion : ViewModelCompletion) {
         addBookToTypeOfCategoty(book, category: .ReadList) { 
             completion()

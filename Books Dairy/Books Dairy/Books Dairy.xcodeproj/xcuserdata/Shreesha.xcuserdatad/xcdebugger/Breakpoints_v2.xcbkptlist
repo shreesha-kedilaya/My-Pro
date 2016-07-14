@@ -41,108 +41,14 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Books Dairy/Models/StructureModels/ViewModels/UserBookListViewModel.swift"
-            timestampString = "489309841.914729"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "19"
-            endingLineNumber = "19"
-            landmarkName = "deleteBookAt(_:completion:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Books Dairy/Models/StructureModels/ViewModels/UserBookListViewModel.swift"
-            timestampString = "489309897.558962"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
-            landmarkName = "deleteBookAt(_:completion:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Books Dairy/Models/StructureModels/ViewModels/UserBookListViewModel.swift"
-            timestampString = "489310092.015721"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
-            landmarkName = "deleteBookAt(_:completion:)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Books_Dairy.UserBookListViewModel.(deleteBookAt (Swift.Int, completion : () -&gt; ()) -&gt; ()).(closure #2)"
-                  moduleName = "Books Dairy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Shreesha/My%20space/My%20Pro/Books%20Dairy/Books%20Dairy/Books%20Dairy/Models/StructureModels/ViewModels/UserBookListViewModel.swift"
-                  timestampString = "489334046.952716"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "38"
-                  endingLineNumber = "38"
-                  offsetFromSymbolStart = "936">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Books_Dairy.UserBookListViewModel.(deleteBookAt (Swift.Int, completion : () -&gt; ()) -&gt; ()).(closure #2).(closure #1)"
-                  moduleName = "Books Dairy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Shreesha/My%20space/My%20Pro/Books%20Dairy/Books%20Dairy/Books%20Dairy/Models/StructureModels/ViewModels/UserBookListViewModel.swift"
-                  timestampString = "489334046.952866"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "38"
-                  endingLineNumber = "38"
-                  offsetFromSymbolStart = "42">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Books Dairy/Models/StructureModels/ViewModels/UserBookListViewModel.swift"
-            timestampString = "489310092.519642"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
-            landmarkName = "deleteBookAt(_:completion:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "Books Dairy/DataModels/PersistenceStack.swift"
             timestampString = "489327838.856062"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "95"
-            endingLineNumber = "95">
+            endingLineNumber = "95"
+            landmarkName = "buildStack(_:)"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -156,7 +62,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "97"
-            endingLineNumber = "97">
+            endingLineNumber = "97"
+            landmarkName = "buildStack(_:)"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -170,70 +78,8 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "100"
-            endingLineNumber = "100">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Books Dairy/Models/StructureModels/ViewModels/BookListViewModel.swift"
-            timestampString = "489331499.698547"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
-            landmarkName = "fetchAllData(_:)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Books_Dairy.BookListViewModel.(fetchAllData (() -&gt; ()) -&gt; ()).(closure #1)"
-                  moduleName = "Books Dairy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Shreesha/My%20space/My%20Pro/Books%20Dairy/Books%20Dairy/Books%20Dairy/Models/StructureModels/ViewModels/BookListViewModel.swift"
-                  timestampString = "489334046.967978"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "25"
-                  endingLineNumber = "25"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Books_Dairy.BookListViewModel.(fetchAllData (() -&gt; ()) -&gt; ()).(closure #1).(closure #1)"
-                  moduleName = "Books Dairy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Shreesha/My%20space/My%20Pro/Books%20Dairy/Books%20Dairy/Books%20Dairy/Models/StructureModels/ViewModels/BookListViewModel.swift"
-                  timestampString = "489334046.968109"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "26"
-                  endingLineNumber = "26"
-                  offsetFromSymbolStart = "24">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Books Dairy/Models/StructureModels/ViewModels/BookListViewModel.swift"
-            timestampString = "489333654.035477"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "23"
-            endingLineNumber = "23"
-            landmarkName = "fetchAllData(_:)"
+            endingLineNumber = "100"
+            landmarkName = "buildStack(_:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

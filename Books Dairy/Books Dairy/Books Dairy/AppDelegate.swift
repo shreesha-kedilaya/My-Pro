@@ -18,20 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         ///Just to create the persistent store quickly as possible
         PersistenceStack.sharedInstance
-
-        
-        Async.after(0.5) {
-            let context = PersistenceStack.sharedInstance.createChildContext()
-            let users : [User]? = context.executeTheFetchRequest()
-            if let users = users {
-                for user in users {
-                    user.author_rating = 4
-                }
-            }
-            context.SynchronouslySave {
-                
-            }
-        }
         return true
     }
 
