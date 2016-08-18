@@ -9,6 +9,7 @@
         <attribute name="category" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="details" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="simpleString" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="timeStamp" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BookCategory" inverseName="book" inverseEntity="BookCategory" syncable="YES"/>
         <relationship name="ratings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Rating" inverseName="book" inverseEntity="Rating" syncable="YES"/>
@@ -33,7 +34,7 @@
         <relationship name="books" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book" inverseName="users" inverseEntity="Book" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Book" positionX="-585" positionY="18" width="128" height="225"/>
+        <element name="Book" positionX="-585" positionY="18" width="128" height="240"/>
         <element name="BookCategory" positionX="-594" positionY="99" width="128" height="90"/>
         <element name="Rating" positionX="-594" positionY="72" width="128" height="90"/>
         <element name="User" positionX="-594" positionY="-10" width="128" height="135"/>

@@ -2,7 +2,7 @@
 //  BookCategory.swift
 //  Books Dairy
 //
-//  Created by Shreesha on 05/07/16.
+//  Created by Shreesha on 18/08/16.
 //  Copyright © 2016 YML. All rights reserved.
 //
 
@@ -12,17 +12,6 @@ import CoreData
 
 class BookCategory: NSManagedObject {
 
-    var readingListCategoty: ReadingCategory? {
-        get {
-            if let readingCategory = category {
-                return ReadingCategory(rawValue: readingCategory as Int)
-            } else {
-                return ReadingCategory.None
-            }
-        }
-        set {
-            self.category = newValue?.rawValue
-        }
-    }
+// Insert code here to add functionality to your managed object subclass
 
 }

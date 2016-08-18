@@ -73,7 +73,7 @@ class BookListViewController: UIViewController {
     private func updateTheHeaderView(){
 
         profileHeaderView.nameLabel.text = viewModel.user?.name
-        profileHeaderView.departmentLabel.text = String(viewModel.user?.author_rating)
+        profileHeaderView.departmentLabel.text = String(viewModel.user?.info)
 
     }
 

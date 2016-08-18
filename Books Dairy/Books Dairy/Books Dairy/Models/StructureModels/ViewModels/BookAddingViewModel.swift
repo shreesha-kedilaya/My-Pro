@@ -44,6 +44,7 @@ class BookAddingViewModel {
         newRatingObject?.rating = rating
 
         book?.bookId = actualId
+        book?.simpleString = NSAttributedString(string: "Simple Name")
         if let newRatingObjects = book?.ratings?.allObjects {
             let newRatingSet = NSMutableSet(array: newRatingObjects)
             if let newRatingObject = newRatingObject {
