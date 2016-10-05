@@ -98,6 +98,7 @@ class RangeSelector: UIControl {
     var labelTextColor = UIColor.blackColor()
 
     override func awakeFromNib() {
+        super.awakeFromNib()
         setupTheInitialViews()
     }
 
@@ -152,6 +153,7 @@ class RangeSelector: UIControl {
     }
 
     override func layoutSubviews() {
+        super.layoutSubviews()
         setupFrames()
     }
 

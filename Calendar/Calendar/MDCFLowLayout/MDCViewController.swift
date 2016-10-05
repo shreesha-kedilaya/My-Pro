@@ -21,13 +21,11 @@ class MDCViewController: UIViewController, UICollectionViewDelegate, UICollectio
     }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        let size = CGSize(width: collectionView.bounds.size.width - 60, height: collectionView.bounds.size.height)
+        let size = CGSize(width: 200, height: 400)
 
-        let minSize = CGSize(width: collectionView.bounds.size.width - 80, height: collectionView.bounds.size.height - 200)
-        
-        flowLayout = MDCollectionViewFlowLayout(minimumSizeForItem: minSize, maximumSizeForItem: size)
+        flowLayout = MDCollectionViewFlowLayout(size: size, aspectRatio: 0.85)
         flowLayout.scrollDirection = .Horizontal
-        flowLayout.minimumInteritemSpacing = 0.0
+        flowLayout.minimumInteritemSpacing = 50
         flowLayout.minimumLineSpacing = 0.0
 
         collectionView.setCollectionViewLayout(flowLayout, animated: true)

@@ -163,7 +163,6 @@ class Animator: UIPercentDrivenInteractiveTransition , UIViewControllerAnimatedT
         if gesture.state == UIGestureRecognizerState.Began {
 
             interactive = true
-
             presentedViewController.dismissViewControllerAnimated(true, completion: nil)
 
         } else if gesture.state == UIGestureRecognizerState.Changed {

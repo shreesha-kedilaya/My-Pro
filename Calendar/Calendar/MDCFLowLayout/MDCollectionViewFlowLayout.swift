@@ -48,6 +48,13 @@ class MDCollectionViewFlowLayout: UICollectionViewFlowLayout {
         startingXPadding = (UIScreen.mainScreen().bounds.size.width - maximumSizeForItem.width) / 2
     }
 
+    init(size: CGSize, aspectRatio: CGFloat) {
+        super.init()
+        maximumSizeForItem = size
+        minimumSizeForItem = CGSize(width: size.width * aspectRatio, height: size.height * aspectRatio)
+        startingXPadding = (UIScreen.mainScreen().bounds.size.width - maximumSizeForItem.width) / 2
+    }
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -136,12 +143,14 @@ class MDCollectionViewFlowLayout: UICollectionViewFlowLayout {
 
         case highlightedItemIndex:
             percentage = 1 - abs(percentageHighlightOfFeaturedIndex())
-        case highlightedItemIndex+1, highlightedItemIndex+2:
-            percentage = abs(percentageHighlightOfFeaturedIndex())
-        case highlightedItemIndex - 1, highlightedItemIndex - 2 :
-            percentage = abs(percentageHighlightOfFeaturedIndex())
+        case highlightedItemIndex + 1:
+            let percent = percentageHighlightOfFeaturedIndex() > 0 ? percentageHighlightOfFeaturedIndex() : 0
+            percentage = abs(percent)
+        case highlightedItemIndex - 1:
+            let percent = percentageHighlightOfFeaturedIndex() < 0 ? percentageHighlightOfFeaturedIndex() : 0
+            percentage = abs(percent)
         default:
-            percentage = 1.0
+            percentage = 0
         }
 
         return percentage
@@ -151,13 +160,16 @@ class MDCollectionViewFlowLayout: UICollectionViewFlowLayout {
 
         var yPadding = 0.f
         if indexPath.item == highlightedItemIndex {
-            yPadding = yMinimuPadding.f - abs(percentageHighlightOfFeaturedIndex()) * differenceYPadding()
-        } else if indexPath.item == highlightedItemIndex+1  || indexPath.item == highlightedItemIndex + 2{   //The next item
-            yPadding = yMaximumPadding.f + percentageHighlightOfFeaturedIndex() * differenceYPadding()
+            let percentage = abs(percentageHighlightOfFeaturedIndex()) <= 1 ? abs(percentageHighlightOfFeaturedIndex()): 1
+            yPadding = yMinimuPadding.f - percentage * differenceYPadding()
+        } else if indexPath.item == highlightedItemIndex+1  {//|| indexPath.item == highlightedItemIndex + 2{   //The next item
+            let percentage = percentageHighlightOfFeaturedIndex() > 0 ? percentageHighlightOfFeaturedIndex() : 0
+            yPadding = yMaximumPadding.f + percentage * differenceYPadding()
         } else if indexPath.item == highlightedItemIndex-1  {    //The previous item
-            yPadding = yMaximumPadding.f + abs(percentageHighlightOfFeaturedIndex()) * differenceYPadding()
+            let percentage = percentageHighlightOfFeaturedIndex() < 0 ? percentageHighlightOfFeaturedIndex() : 0
+            yPadding = yMaximumPadding.f + abs(percentage) * differenceYPadding()
         } else {
-            yPadding = yMinimuPadding.f
+            yPadding = yMinimuPadding.f - differenceYPadding()
         }
         return yPadding
     }
@@ -168,17 +180,22 @@ class MDCollectionViewFlowLayout: UICollectionViewFlowLayout {
     private func getSizeOfItemAt(indexPath: NSIndexPath) -> CGSize {
         var size = CGSizeZero
 
-        if indexPath.item == highlightedItemIndex{
+        if indexPath.item == highlightedItemIndex {
 
             size = CGSize(width: maximumSizeForItem.width - abs(percentageHighlightOfFeaturedIndex()) * differenceBetweenWidths(), height: maximumSizeForItem.height - abs(percentageHighlightOfFeaturedIndex()) * differenceBetweenHeights())
+            size.height = size.height >= minimumSizeForItem.height ? size.height: minimumSizeForItem.height
+            size.width = size.width >= minimumSizeForItem.width ? size.width: minimumSizeForItem.width
 
         } else if indexPath.item == highlightedItemIndex + 1 {
 
-            size = CGSize(width: maximumSizeForItem.width - percentageHighlightOfFeaturedIndex() * differenceBetweenWidths(), height: minimumSizeForItem.height + percentageHighlightOfFeaturedIndex() * differenceBetweenHeights())
+            let percentage = percentageHighlightOfFeaturedIndex() > 0 ? percentageHighlightOfFeaturedIndex() : 0
+            size = CGSize(width: minimumSizeForItem.width + abs(percentage) * differenceBetweenWidths(), height: minimumSizeForItem.height + percentage * differenceBetweenHeights())
 
-        } else if indexPath.item == highlightedItemIndex - 1 || indexPath.item == highlightedItemIndex - 2{
+        } else if indexPath.item == highlightedItemIndex - 1 {//|| indexPath.item == highlightedItemIndex - 2{
 
-            size = CGSize(width: minimumSizeForItem.width + abs(percentageHighlightOfFeaturedIndex()) * differenceBetweenWidths(), height: minimumSizeForItem.height + abs(percentageHighlightOfFeaturedIndex()) * differenceBetweenHeights())
+            let percentage = percentageHighlightOfFeaturedIndex() < 0 ? percentageHighlightOfFeaturedIndex() : 0
+
+            size = CGSize(width: minimumSizeForItem.width + abs(percentage) * differenceBetweenWidths(), height: minimumSizeForItem.height + abs(percentage) * differenceBetweenHeights())
 
         }else {
             size = minimumSizeForItem
