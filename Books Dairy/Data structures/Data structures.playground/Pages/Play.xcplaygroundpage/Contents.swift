@@ -17,12 +17,12 @@ let secondHalf = absences.suffix(midpoint)
 print(firstHalf)
 print(secondHalf)
 
-print(aFunction(numbers: [1,2,4,3,5], position: 2))
+print(aFunction([1,2,4,3,5], position: 2))
 
 let limit = 8
 
 let count = absences.count
-let reverse = absences.reversed()
+let reverse = absences.reverse()
 //let newArraySlice = reverse[count - limit...0+count-1]
 //let newArray = Array(newArraySlice)
 //print(newArray)
