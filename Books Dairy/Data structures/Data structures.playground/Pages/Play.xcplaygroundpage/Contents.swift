@@ -3,7 +3,7 @@
 import UIKit
 
 var str = "Hello, playground"
-func aFunction(numbers: Array<Int>, position: Int) -> Array<Int> {
+func aFunction(_ numbers: Array<Int>, position: Int) -> Array<Int> {
     let newNumbers = numbers[0..<position]
     return Array(newNumbers)
 }
@@ -22,7 +22,7 @@ print(aFunction([1,2,4,3,5], position: 2))
 let limit = 8
 
 let count = absences.count
-let reverse = absences.reverse()
+let reverse = absences.reversed()
 //let newArraySlice = reverse[count - limit...0+count-1]
 //let newArray = Array(newArraySlice)
 //print(newArray)
