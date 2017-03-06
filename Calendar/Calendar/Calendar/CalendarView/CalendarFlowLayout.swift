@@ -80,6 +80,9 @@ class CalendarFlowLayout: UICollectionViewFlowLayout {
                 nsDateComponents.month = getCurrentMonthForSection(section, month: true)
                 nsDateComponents.year = getCurrentMonthForSection(section, month: false)
 
+                print("nsDateComponents.month: ", nsDateComponents.month ?? 1)
+                print("nsDateComponents.year: ", nsDateComponents.year ?? 1)
+
                 let firstDay = dateComponent.startingRangeOfDay() - 1
 
                 let heightForThisSectionItems = collectionView.frame.height / dateComponent.getNumberOfWeekForCurrentDate().f
@@ -125,6 +128,7 @@ extension CalendarFlowLayout {
         return "\(indexPath.section)_\(indexPath.item)"
     }
 }
+
 extension CalendarFlowLayout {
     fileprivate func getCurrentMonthForSection(_ section : Int, month : Bool) -> Int{
         switch month {
@@ -132,7 +136,7 @@ extension CalendarFlowLayout {
             let retMonth = (section + presentingMonth + rangeOfMonthToBeAdded() - 1) % 12
             return retMonth
         case false:
-            let retYear = presentingYear.f + floor((section.f + presentingMonth.f + currentIterationIndex.f + rangeOfMonthToBeAdded().f - 1.f) / 12.f)
+            let retYear = presentingYear.f + floor((section.f + presentingMonth.f + rangeOfMonthToBeAdded().f - 1.f) / 12.f)
             return Int(retYear)
         }
     }

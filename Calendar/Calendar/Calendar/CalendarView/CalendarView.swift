@@ -204,6 +204,7 @@ class CalendarView: UIView {
 
     fileprivate func sharedInit() {
 
+        currentSection = 1
         backgroundColor = UIColor.blue
         addAttributesToFlowLayout()
 
@@ -371,30 +372,24 @@ class CalendarView: UIView {
         guard let indexPath = calendarCollectionView.indexPathForItem(at: point) else {
             return
         }
+
+        let startIndex = panningDirection == .forward ? currentPanningIndexPath.item: indexPath.item
+        let endIndex = panningDirection == .forward ? indexPath.item: currentPanningIndexPath.item
+
+        if endIndex > startIndex {
+            for item in startIndex...endIndex {
+                let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell
+                cell?.highlightedItem = false
+            }
+        }
+
         if isStartingPoint {
             panStartingIndexPath = indexPath
             currentPanningIndexPath = indexPath
             startPanningPoint = point
         }
-        let cell = calendarCollectionView.cellForItem(at: indexPath) as? CalendarViewCell
-
-//        let rowColumn = getTheCurrentRowColumnFor(indexPath)
-
-//        let row = rowColumn.0
-//        let column = rowColumn.1
 
         var highlight = false
-
-//        let previousPanningDirection = panningDirection
-
-//        switch pointIsGreaterThanCurrentPoint(point) {
-//
-//        case true:
-//            panningDirection = .Forward(atPoint: point)
-//        case false:
-//            panningDirection = .Backward(atPoint: point)
-//        }
-
 
         highlight = panningDirection == .forward ? pointIsGreaterThanCurrentPoint(point) : !pointIsGreaterThanCurrentPoint(point)
 
@@ -403,16 +398,30 @@ class CalendarView: UIView {
         } else {
             shouldChangeDirection = pointIsGreaterThanStartingPoint(point) ? true : false
         }
-        
+
         currentPanningPoint = point
 
+        let start = currentPanningIndexPath.item < panStartingIndexPath.item ? currentPanningIndexPath.item: panStartingIndexPath.item
+        let end = currentPanningIndexPath.item > panStartingIndexPath.item ? currentPanningIndexPath.item: panStartingIndexPath.item
 
-        if let cell = cell {
-            if !(currentPanningIndexPath == indexPath) || indexPath == panStartingIndexPath{
-                cell.highlightedItem = indexPath == panStartingIndexPath ? true :  highlight
-            }
+        for item in start...end {
+            let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell
+            cell?.highlightedItem = indexPath == panStartingIndexPath ? true :  highlight
         }
+
         currentPanningIndexPath = indexPath
+    }
+
+    fileprivate func rangeTo(_ point: CGPoint) -> (start: Int, end: Int) {
+        let startIndexPath = panStartingIndexPath
+        guard let endingIndexPath = calendarCollectionView.indexPathForItem(at: point) else {
+            return (0,0)
+        }
+
+        let range = (start: startIndexPath.item, end: endingIndexPath.item)
+
+        return range
+
     }
 
     fileprivate func pointIsGreaterThanCurrentPoint(_ point : CGPoint) -> Bool {
@@ -558,6 +567,8 @@ class CalendarView: UIView {
         DispatchQueue.main.async {
             self.calendarCollectionView.reloadData()
         }
+
+        print("Reloaded")
     }
 }
 
@@ -698,6 +709,7 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
 
             self.reloadData()
             self.flowLayout?.currentIterationIndex = self.numberOfIterations
+            print("numberOfIterations: ", self.numberOfIterations)
             self.flowLayout?.invalidateLayout()
         }
     }
