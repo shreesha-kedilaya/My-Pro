@@ -52,31 +52,31 @@ final class PersistenceStack {
     static let sharedInstance = PersistenceStack(modelName: kModelName)
     
     /** Main context for use in View Controllers, Fetch Results Controllers etc. */
-    private(set) var mainContext: NSManagedObjectContext = {
+    fileprivate(set) var mainContext: NSManagedObjectContext = {
         let context = PersistenceStack.createMainContext()
         return context
     }()
     
     /** Private context: Parent of main context. */
-    private private(set) var privateContext: NSManagedObjectContext = {
+    fileprivate fileprivate(set) var privateContext: NSManagedObjectContext = {
         let context = PersistenceStack.createPrivateContext()
         return context
     }()
     
     
-    private init(modelName: String) {
+    fileprivate init(modelName: String) {
         buildStack(modelName)
     }
     
-    private func buildStack(modelName: String) {
-        guard let modelURL = NSBundle.mainBundle().URLForResource(modelName, withExtension:"momd") else {
+    fileprivate func buildStack(_ modelName: String) {
+        guard let modelURL = Bundle.main.url(forResource: modelName, withExtension:"momd") else {
 
             fatalError("Error loading model from bundle")
         }
 
 
         
-        guard let managedObjectModel = NSManagedObjectModel(contentsOfURL: modelURL) else {
+        guard let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL) else {
 
             fatalError("Error initializing mom from: \(modelURL)")
         }
@@ -85,16 +85,16 @@ final class PersistenceStack {
         
         privateContext.persistentStoreCoordinator = coordinator
         
-        mainContext.parentContext = privateContext
+        mainContext.parent = privateContext
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { () -> Void in
+        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async { () -> Void in
         let psc = self.privateContext.persistentStoreCoordinator
         
         let storeURL = self.storeURL()
         print(storeURL)
         let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
         do {
-            try psc?.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: storeURL, options: options)
+            try psc?.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: options)
         } catch {
 
             fatalError("Error migrating store: \(error)")
@@ -104,22 +104,22 @@ final class PersistenceStack {
         }
     }
     
-    private func storeURL() -> NSURL? {
-        let urls = NSFileManager.defaultManager().URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask)
+    fileprivate func storeURL() -> URL? {
+        let urls = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask)
         let docURL = urls.last
         
-        let storeURL = docURL?.URLByAppendingPathComponent("\(kModelName).sqlite")
+        let storeURL = docURL?.appendingPathComponent("\(kModelName).sqlite")
         
         return storeURL
     }
     
-    private static func createMainContext() -> NSManagedObjectContext {
-        let context = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.MainQueueConcurrencyType)
+    fileprivate static func createMainContext() -> NSManagedObjectContext {
+        let context = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.mainQueueConcurrencyType)
         return context
     }
     
-    private static func createPrivateContext() -> NSManagedObjectContext {
-        let context = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.PrivateQueueConcurrencyType)
+    fileprivate static func createPrivateContext() -> NSManagedObjectContext {
+        let context = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType)
         return context
     }
     
@@ -129,12 +129,12 @@ final class PersistenceStack {
             return
         }
         
-        mainContext.performBlockAndWait { () -> Void in
+        mainContext.performAndWait { () -> Void in
             
             do {
                 try self.mainContext.save()
                 
-                self.privateContext.performBlock({ () -> Void in
+                self.privateContext.perform({ () -> Void in
                     do {
                         try self.privateContext.save()
                     } catch {
@@ -148,13 +148,13 @@ final class PersistenceStack {
     }
     
     func createChildContext() -> NSManagedObjectContext {
-        let context = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.PrivateQueueConcurrencyType)
-        context.parentContext = mainContext
+        let context = NSManagedObjectContext(concurrencyType: NSManagedObjectContextConcurrencyType.privateQueueConcurrencyType)
+        context.parent = mainContext
         return context
     }
     
     //CAUTION: USE THIS METHOD WITH UTMOST CARE. Make it non-private only if required.
-    private func reset() {
+    fileprivate func reset() {
         let persistentStoreCoordinator = privateContext.persistentStoreCoordinator
         
         mainContext.reset()
@@ -168,7 +168,7 @@ final class PersistenceStack {
         
         for store in persistentStores {
             do {
-                try persistentStoreCoordinator?.removePersistentStore(store)
+                try persistentStoreCoordinator?.remove(store)
             } catch {
             }
         }
@@ -176,7 +176,7 @@ final class PersistenceStack {
         //Remove SQLiteStore
         do {
             let storeURL = self.storeURL()
-            try NSFileManager.defaultManager().removeItemAtURL(storeURL!) 
+            try FileManager.default.removeItem(at: storeURL!) 
             
         } catch {
         }

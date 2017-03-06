@@ -22,17 +22,17 @@ import Foundation
 //}
 extension BookCategory {
     enum ReadingCategory : Int {
-        case ReadList = 10
-        case WishList = 20
-        case None = 100
+        case readList = 10
+        case wishList = 20
+        case none = 100
 
         func name() -> String {
             switch self {
-            case .ReadList: return "Read List"
+            case .readList: return "Read List"
 
-            case .WishList: return "Wish List"
+            case .wishList: return "Wish List"
                 
-            case .None: return "None"
+            case .none: return "None"
             }
         }
     }

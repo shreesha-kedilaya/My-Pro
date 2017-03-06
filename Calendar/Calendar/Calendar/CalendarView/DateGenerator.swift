@@ -10,9 +10,9 @@ import Foundation
 struct Date {
     
 }
-var nsDateComponents = NSDateComponents()
-var calendar = NSCalendar.currentCalendar()
-var dateFormatter = NSDateFormatter()
+var nsDateComponents = DateComponents()
+var calendar = Foundation.Calendar.current
+var dateFormatter = DateFormatter()
 
 var dateComponent : DateComponent!
 
@@ -22,42 +22,42 @@ class DateComponent: NSObject {
 
 extension DateComponent {
 
-    private func getActualDatefromCalendar() -> NSDate {
-        if let date = calendar.dateFromComponents(nsDateComponents) {
+    fileprivate func getActualDatefromCalendar() -> Foundation.Date {
+        if let date = calendar.date(from: nsDateComponents) {
             return date
         }
-        return NSDate()
+        return Foundation.Date()
     }
 
-    func changeDateComponentsForDate(date : NSDate) {
-        nsDateComponents = calendar.components([NSCalendarUnit.Day, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.Weekday], fromDate: date)
+    func changeDateComponentsForDate(_ date : Foundation.Date) {
+        nsDateComponents = (calendar as NSCalendar).components([NSCalendar.Unit.day, NSCalendar.Unit.month, NSCalendar.Unit.year, NSCalendar.Unit.weekday], from: date)
     }
 
     func totalDaysInAMonthForTheCurrentDate() -> Int {
-        let total = calendar.rangeOfUnit(NSCalendarUnit.Day, inUnit: NSCalendarUnit.Month, forDate: getActualDatefromCalendar()).length
+        let total = (calendar as NSCalendar).range(of: NSCalendar.Unit.day, in: NSCalendar.Unit.month, for: getActualDatefromCalendar()).length
         return total
     }
 
     func startingRangeOfDay() -> Int {
         changeDateComponentsForDate(getActualDatefromCalendar())
-        return nsDateComponents.weekday
+        return nsDateComponents.weekday!
     }
 
     func getNumberOfWeekForCurrentDate() -> Int {
-        let total = calendar.rangeOfUnit(.WeekOfMonth, inUnit: .Month, forDate: getActualDatefromCalendar()).length
+        let total = (calendar as NSCalendar).range(of: .weekOfMonth, in: .month, for: getActualDatefromCalendar()).length
         return total
     }
 }
 
 
 class DateGenerator: NSObject {
-    var dates : [NSDate]?
+    var dates : [Foundation.Date]?
 
-    private var startingDate : NSDate?
-    private var endingDate : NSDate?
+    fileprivate var startingDate : Foundation.Date?
+    fileprivate var endingDate : Foundation.Date?
     weak var delegate : DateGeneratorDelegate?
 
-    init(startingDate : NSDate , endingDate : NSDate, delegate : DateGeneratorDelegate) {
+    init(startingDate : Foundation.Date , endingDate : Foundation.Date, delegate : DateGeneratorDelegate) {
         super.init()
 
         self.delegate = delegate
@@ -66,24 +66,24 @@ class DateGenerator: NSObject {
         setTheInitialDates()
     }
 
-    private func setTheInitialDates() {
+    fileprivate func setTheInitialDates() {
 
         if dates == nil {
             updateTheDates()
         }
     }
-    private func updateTheDates(){
+    fileprivate func updateTheDates(){
 
-        if let startingDate = startingDate , endingDate = endingDate {
+        if let startingDate = startingDate , let endingDate = endingDate {
 
-            let componenets = calendar.components(.Day, fromDate: startingDate, toDate: endingDate, options: .MatchStrictly)
+            let componenets = (calendar as NSCalendar).components(.day, from: startingDate, to: endingDate, options: .matchStrictly)
 
-            for date in 0..<componenets.day {
+            for date in 0..<componenets.day! {
 
                 let daysToAdd = date
 
                 if let _ = dates {
-                    self.dates?.append(startingDate.dateByAddingTimeInterval(60*60*24*Double(daysToAdd)))
+                    self.dates?.append(startingDate.addingTimeInterval(60*60*24*Double(daysToAdd)))
                 } else {
                     dates = [startingDate]
                 }
@@ -92,7 +92,7 @@ class DateGenerator: NSObject {
         }
     }
 
-    func updateTheDatesWith(startingDate :NSDate, endingDate : NSDate ) {
+    func updateTheDatesWith(_ startingDate :Foundation.Date, endingDate : Foundation.Date ) {
         self.startingDate = startingDate
         self.endingDate = endingDate
         updateTheDates()
@@ -100,10 +100,10 @@ class DateGenerator: NSObject {
 }
 
 extension DateGenerator {
-    func getInitialIndexForDate(date : NSDate) -> Int? {
+    func getInitialIndexForDate(_ date : Foundation.Date) -> Int? {
         if let dates = dates {
             if dates.contains(date) {
-                return dates.indexOf(date)
+                return dates.index(of: date)
             } else {
                 return nil
             }
@@ -115,5 +115,5 @@ extension DateGenerator {
 
 
 protocol DateGeneratorDelegate : class{
-    func dateGeneratorDidFinishUpatingTheDates(generator :DateGenerator)
+    func dateGeneratorDidFinishUpatingTheDates(_ generator :DateGenerator)
 }

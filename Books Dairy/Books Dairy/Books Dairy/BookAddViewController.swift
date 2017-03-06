@@ -10,7 +10,7 @@ import UIKit
 
 protocol BookAddViewControllerDelegate : class {
 
-    func bookAddViewController(controller:BookAddViewController, didSuccessfullyAddWithBook book: Book?, user : User?)
+    func bookAddViewController(_ controller:BookAddViewController, didSuccessfullyAddWithBook book: Book?, user : User?)
 }
 
 class BookAddViewController: UIViewController {
@@ -30,12 +30,12 @@ class BookAddViewController: UIViewController {
 
     weak var delegate : BookAddViewControllerDelegate?
 
-    private var category = Book.Category.None
-    private var rating = 0
+    fileprivate var category = Book.Category.None
+    fileprivate var rating = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        categoryPickerView.hidden = true
+        categoryPickerView.isHidden = true
         detailTextView.delegate = self
         detailTextView.layer.cornerRadius = 2.0
         categoryButton.layer.cornerRadius = 2.0
@@ -47,7 +47,7 @@ class BookAddViewController: UIViewController {
         addShadowToTheTextfields()
     }
 
-    private func addShadowToTheTextfields() {
+    fileprivate func addShadowToTheTextfields() {
 
         bookNameTextField.layer.shadowRadius = 2.0
         bookNameTextField.layer.shadowOpacity = 0.5
@@ -57,23 +57,23 @@ class BookAddViewController: UIViewController {
         
     }
 
-    @IBAction func categoryButtonDidClick(sender: AnyObject) {
+    @IBAction func categoryButtonDidClick(_ sender: AnyObject) {
         view.endEditing(true)
-        categoryPickerView.hidden = false
+        categoryPickerView.isHidden = false
         categoryPickerView.alpha = 0.0
-        UIView.animateWithDuration(0.5) {
+        UIView.animate(withDuration: 0.5, animations: {
             self.categoryPickerView.alpha = 1.0
-        }
+        }) 
 
-        view.bringSubviewToFront(categoryPickerView)
+        view.bringSubview(toFront: categoryPickerView)
     }
     
-    @IBAction func cancelButtonDidClick(sender: AnyObject) {
-        dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func cancelButtonDidClick(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
     }
 
-    @IBAction func saveButtonDidClick(sender: AnyObject) {
-        if let bookName = bookNameTextField.text, authorName = AuthorNameTextField.text {
+    @IBAction func saveButtonDidClick(_ sender: AnyObject) {
+        if let bookName = bookNameTextField.text, let authorName = AuthorNameTextField.text {
             viewModel.updateTheBook(bookName, authorName: authorName, category: category, details: detailTextView.text, rating: Float(rating), update : false, completion: {
                 Async.main{
                     self.alert("New Book is added successfully", title: "Book Added", okayCompeltion: { 
@@ -86,59 +86,59 @@ class BookAddViewController: UIViewController {
 }
 
 extension BookAddViewController : UIPickerViewDataSource {
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return Book.Category.allItems.count
     }
 
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
 }
 
 extension BookAddViewController : UIPickerViewDelegate {
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        UIView.animateWithDuration(0.3) {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        UIView.animate(withDuration: 0.3, animations: {
             self.categoryPickerView.alpha = 0.0
-            self.categoryPickerView.hidden = true
-        }
+            self.categoryPickerView.isHidden = true
+        }) 
         category = Book.Category.allItems[row]
-        categoryButton.setTitle(Book.Category.allItems[row].rawValue, forState: .Normal)
+        categoryButton.setTitle(Book.Category.allItems[row].rawValue, for: UIControlState())
     }
 
-    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         let category = Book.Category.allItems[row]
-        let attributedString = NSAttributedString(string: category.rawValue, attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
+        let attributedString = NSAttributedString(string: category.rawValue, attributes: [NSForegroundColorAttributeName:UIColor.white])
         return attributedString
     }
 }
 
 extension BookAddViewController: UITextViewDelegate {
-    func textViewDidBeginEditing(textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) {
         scrollView.setContentOffset(CGPoint(x: 0,y:200), animated: true)
     }
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         scrollView.setContentOffset(CGPoint(x: 0,y:200), animated: true)
     }
 }
 
 extension BookAddViewController : UIScrollViewDelegate {
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        categoryPickerView.hidden = true
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        categoryPickerView.isHidden = true
     }
 }
 extension BookAddViewController : BookRatingViewDelegate {
-    func bookRatingViewDidSelectRatingButtonsUptoIndex(ratingIndex: Int) {
+    func bookRatingViewDidSelectRatingButtonsUptoIndex(_ ratingIndex: Int) {
         rating = ratingIndex
     }
 }
 extension UIViewController {
-    func alert(message: String, title: String, okayCompeltion : ViewModelCompletion) {
-        let controller = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        let okAction = UIAlertAction(title: "OK", style: .Default) { (action) in
+    func alert(_ message: String, title: String, okayCompeltion : @escaping ViewModelCompletion) {
+        let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
             okayCompeltion()
         }
         controller.addAction(okAction)
 
-        self.presentViewController(controller, animated: true, completion: nil)
+        self.present(controller, animated: true, completion: nil)
     }
 }

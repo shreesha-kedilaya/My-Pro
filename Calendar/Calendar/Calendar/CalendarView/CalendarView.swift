@@ -9,18 +9,18 @@
 import UIKit
 
 enum Months : Int {
-    case January = 1,
-    February,
-    March,
-    April,
-    May,
-    June,
-    July,
-    August,
-    September,
-    October,
-    November,
-    December
+    case january = 1,
+    february,
+    march,
+    april,
+    may,
+    june,
+    july,
+    august,
+    september,
+    october,
+    november,
+    december
 
     func name() -> String {
         return "\(self)"
@@ -28,23 +28,23 @@ enum Months : Int {
 }
 
 enum Week : Int{
-    case Sunday = 1,
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday
+    case sunday = 1,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday
 
-    func name(style : WeekStyles, casingStyle : CasingStyle) -> String {
+    func name(_ style : WeekStyles, casingStyle : CasingStyle) -> String {
 
-        var range = Range(0...0)
+        var range = ClosedRange(0...0)
         switch style {
-        case .One:
+        case .one:
             range = 0...0
-        case .Two:
+        case .two:
             range = 0...1
-        case .Three :
+        case .three :
             range = 0...2
         default :
             range = 0...("\(self)".characters.count - 1)
@@ -54,33 +54,33 @@ enum Week : Int{
     }
 }
 enum WeekStyles : Int{
-    case One = 10,
-    Two,
-    Three,
-    Full
+    case one = 10,
+    two,
+    three,
+    full
 }
 
 enum CasingStyle {
-    case FirstLetterUpper,
-    AllUpper,
-    AllLower
+    case firstLetterUpper,
+    allUpper,
+    allLower
 
-    func letter(forString : String) -> String {
+    func letter(_ forString : String) -> String {
         switch self {
-        case .FirstLetterUpper:
+        case .firstLetterUpper:
             return forString
-        case .AllLower:
-            return forString.lowercaseString
-        case .AllUpper :
-            return forString.uppercaseString
+        case .allLower:
+            return forString.lowercased()
+        case .allUpper :
+            return forString.uppercased()
         }
     }
 }
 
 enum PanningDirection: Equatable {
 
-    case Forward
-    case Backward
+    case forward
+    case backward
 }
 
 func ==(lhs: PanningDirection, rhs: PanningDirection) -> Bool {
@@ -88,26 +88,26 @@ func ==(lhs: PanningDirection, rhs: PanningDirection) -> Bool {
     var retVal = false
 
     switch lhs {
-    case .Forward:
+    case .forward:
 
         switch rhs {
-        case .Forward:
+        case .forward:
             retVal = true
-        case .Backward:
+        case .backward:
             retVal = false
         }
 
-    case .Backward:
+    case .backward:
         switch rhs {
-        case .Forward:
+        case .forward:
             retVal = false
-        case .Backward:
+        case .backward:
             retVal = true
         }
     }
 
     switch (lhs, rhs) {
-    case (.Forward, .Forward):
+    case (.forward, .forward):
         retVal = true
     default:
         break
@@ -121,41 +121,41 @@ class CalendarView: UIView {
 
     //MARK:Private properties
 
-    private var calendarCollectionView : UICollectionView!
-    private var calendarPanGesture : UILongPressGestureRecognizer!
-    private let kDefaultNumberOfSections = 5
-    private var initialDateIndex = 0
+    fileprivate var calendarCollectionView : UICollectionView!
+    fileprivate var calendarPanGesture : UILongPressGestureRecognizer!
+    fileprivate let kDefaultNumberOfSections = 5
+    fileprivate var initialDateIndex = 0
 
-    private var presentingDay = 0
-    private var presentingMonth = 0
-    private var presentingYear = 0
+    fileprivate var presentingDay = 0
+    fileprivate var presentingMonth = 0
+    fileprivate var presentingYear = 0
 
-    private var numberOfIterations = 0
-    private let kCellsVisibleToTheUser = 3
-    private let kNumberOfDaysInAWeek = 7
-    private var scrolledInitially = false
+    fileprivate var numberOfIterations = 0
+    fileprivate let kCellsVisibleToTheUser = 3
+    fileprivate let kNumberOfDaysInAWeek = 7
+    fileprivate var scrolledInitially = false
 
     enum BoundaryPositions : Int {
-        case Forward = 1,
-        Backward
+        case forward = 1,
+        backward
     }
-    private var flowLayout : CalendarFlowLayout?
+    fileprivate var flowLayout : CalendarFlowLayout?
 
-    private let kNumberOfSections = 5
-    private var currentSection = 0
-    private var currentMonth = 0
-    private var currentYear = 0
-    private var collectionViewWidth: CGFloat!
-    private var collectionViewHeight: CGFloat!
-    private var weekLabels : [UILabel]!
-    private var yearMonthButton : UIButton!
-    private var panningDirection = PanningDirection.Forward
-    private var panStartingIndexPath = NSIndexPath(forItem: 0, inSection: 0)
+    fileprivate let kNumberOfSections = 5
+    fileprivate var currentSection = 0
+    fileprivate var currentMonth = 0
+    fileprivate var currentYear = 0
+    fileprivate var collectionViewWidth: CGFloat!
+    fileprivate var collectionViewHeight: CGFloat!
+    fileprivate var weekLabels : [UILabel]!
+    fileprivate var yearMonthButton : UIButton!
+    fileprivate var panningDirection = PanningDirection.forward
+    fileprivate var panStartingIndexPath = IndexPath(item: 0, section: 0)
 
-    private var currentPanningPoint = CGPoint(x: 0, y: 0)
-    private var currentPanningIndexPath = NSIndexPath(forItem: 0, inSection: 0)
-    private var startPanningPoint = CGPoint(x: 0, y: 0)
-    private var shouldChangeDirection = true
+    fileprivate var currentPanningPoint = CGPoint(x: 0, y: 0)
+    fileprivate var currentPanningIndexPath = IndexPath(item: 0, section: 0)
+    fileprivate var startPanningPoint = CGPoint(x: 0, y: 0)
+    fileprivate var shouldChangeDirection = true
 
     //MARK:Public properties
 
@@ -164,12 +164,12 @@ class CalendarView: UIView {
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     var startingYearLimit = 0 // the value should be minus if the calendar should show the year limit of the previous year/years
     var endingYearLimit = 20
-    var startingYear : NSDate?
-    var endingYear : NSDate?
+    var startingYear : Foundation.Date?
+    var endingYear : Foundation.Date?
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    var presentingDate = NSDate() {
+    var presentingDate = Foundation.Date() {
         didSet {
             changeTheDateComponent()
             reloadData()
@@ -189,7 +189,7 @@ class CalendarView: UIView {
         sharedInit()
     }
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.mainScreen().bounds.width, height: UIScreen.mainScreen().bounds.height))
+        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         sharedInit()
     }
     required init?(coder aDecoder: NSCoder) {
@@ -202,20 +202,20 @@ class CalendarView: UIView {
         sharedInit()
     }
 
-    private func sharedInit() {
+    fileprivate func sharedInit() {
 
-        backgroundColor = UIColor.blueColor()
+        backgroundColor = UIColor.blue
         addAttributesToFlowLayout()
 
 
         if let calendarCollectionView = calendarCollectionView {
-            calendarCollectionView.backgroundColor = UIColor.blueColor()
+            calendarCollectionView.backgroundColor = UIColor.blue
             calendarCollectionView.delegate = self
             calendarCollectionView.frame = bounds
             calendarCollectionView.dataSource = self
-            calendarCollectionView.pagingEnabled = true
-            calendarCollectionView.backgroundColor = UIColor.blueColor()
-            calendarCollectionView.registerClass(CalendarViewCell.self, forCellWithReuseIdentifier: "Cell")
+            calendarCollectionView.isPagingEnabled = true
+            calendarCollectionView.backgroundColor = UIColor.blue
+            calendarCollectionView.register(CalendarViewCell.self, forCellWithReuseIdentifier: "Cell")
         }
 
         createMonthAndYearLabels()
@@ -233,26 +233,26 @@ class CalendarView: UIView {
         changeTheTextOfYearMonthLabel()
     }
 
-    private func createMonthAndYearLabels() {
+    fileprivate func createMonthAndYearLabels() {
 
         if yearMonthButton == nil {
 
             yearMonthButton = UIButton(frame: CGRect(x: 0, y: 0, width: frame.size.width / 2, height: 30))
-            yearMonthButton.setTitle("Jan 2016", forState: .Normal)
+            yearMonthButton.setTitle("Jan 2016", for: UIControlState())
 
-            yearMonthButton.titleLabel?.textColor = UIColor.whiteColor()
-            yearMonthButton.backgroundColor = UIColor.blueColor()
+            yearMonthButton.titleLabel?.textColor = UIColor.white
+            yearMonthButton.backgroundColor = UIColor.blue
             yearMonthButton.translatesAutoresizingMaskIntoConstraints = false
-            yearMonthButton.titleLabel?.textAlignment = .Center
-            yearMonthButton.addTarget(self, action: #selector(CalendarView.yearMonthButtonDidClick(_:)), forControlEvents: .TouchUpInside)
+            yearMonthButton.titleLabel?.textAlignment = .center
+            yearMonthButton.addTarget(self, action: #selector(CalendarView.yearMonthButtonDidClick(_:)), for: .touchUpInside)
         }
     }
 
-    func yearMonthButtonDidClick(sender : UIButton) {
+    func yearMonthButtonDidClick(_ sender : UIButton) {
         print("Year month button clicked")
     }
     //MARK: creating the week labels
-    private func createWeekLabels() {
+    fileprivate func createWeekLabels() {
 
         if let weekLabels = weekLabels {
             for label in weekLabels {
@@ -263,14 +263,14 @@ class CalendarView: UIView {
 
         for index in 0..<kNumberOfDaysInAWeek {
             let label = UILabel()
-            if let text = Week(rawValue: index + 1)?.name(.Three, casingStyle: .AllUpper) {
+            if let text = Week(rawValue: index + 1)?.name(.three, casingStyle: .allUpper) {
                 label.text = text
             }
-            label.font = UIFont.systemFontOfSize(14)
-            label.textColor = UIColor.whiteColor()
-            label.textAlignment = .Center
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.textColor = UIColor.white
+            label.textAlignment = .center
             label.translatesAutoresizingMaskIntoConstraints = false
-            label.backgroundColor = UIColor.blueColor()
+            label.backgroundColor = UIColor.blue
             label.frame = CGRect(x: index.f * bounds.width / kNumberOfDaysInAWeek.f , y: 0, width: bounds.width / kNumberOfDaysInAWeek.f, height: 30)
             addSubview(label)
 
@@ -285,28 +285,28 @@ class CalendarView: UIView {
             //first item
             case 0:
 
-                topConstraint = NSLayoutConstraint(item: label, attribute: .Top, relatedBy: .Equal, toItem: yearMonthButton, attribute: .Bottom, multiplier: 1, constant: 10)
-                bottomConstraint = NSLayoutConstraint(item: label, attribute: .Bottom, relatedBy: .Equal, toItem: calendarCollectionView, attribute: .Top, multiplier: 1, constant: 0)
-                leadingConstraint = NSLayoutConstraint(item: label, attribute: .Leading, relatedBy: .Equal, toItem: self, attribute: .Leading, multiplier: 1, constant: 0)
+                topConstraint = NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: yearMonthButton, attribute: .bottom, multiplier: 1, constant: 10)
+                bottomConstraint = NSLayoutConstraint(item: label, attribute: .bottom, relatedBy: .equal, toItem: calendarCollectionView, attribute: .top, multiplier: 1, constant: 0)
+                leadingConstraint = NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0)
                 //No trailing constraint required
 
             //Last label
             case kNumberOfDaysInAWeek-1:
 
-                topConstraint = NSLayoutConstraint(item: label, attribute: .Top, relatedBy: .Equal, toItem: yearMonthButton, attribute: .Bottom, multiplier: 1, constant: 10)
-                bottomConstraint = NSLayoutConstraint(item: label, attribute: .Bottom, relatedBy: .Equal, toItem: calendarCollectionView, attribute: .Top, multiplier: 1, constant: 0)
-                leadingConstraint = NSLayoutConstraint(item: label, attribute: .Leading, relatedBy: .Equal, toItem:weekLabels[index-1] , attribute: .Trailing, multiplier: 1, constant: 0)
-                trailingConstraint = NSLayoutConstraint(item: label, attribute: .Trailing, relatedBy: .Equal, toItem: self, attribute: .Trailing, multiplier: 1, constant: 0)
+                topConstraint = NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: yearMonthButton, attribute: .bottom, multiplier: 1, constant: 10)
+                bottomConstraint = NSLayoutConstraint(item: label, attribute: .bottom, relatedBy: .equal, toItem: calendarCollectionView, attribute: .top, multiplier: 1, constant: 0)
+                leadingConstraint = NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem:weekLabels[index-1] , attribute: .trailing, multiplier: 1, constant: 0)
+                trailingConstraint = NSLayoutConstraint(item: label, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant: 0)
 
             default :
 
-                topConstraint = NSLayoutConstraint(item: label, attribute: .Top, relatedBy: .Equal, toItem: yearMonthButton, attribute: .Bottom, multiplier: 1, constant: 10)
-                bottomConstraint = NSLayoutConstraint(item: label, attribute: .Bottom, relatedBy: .Equal, toItem: calendarCollectionView, attribute: .Top, multiplier: 1, constant: 0)
-                leadingConstraint = NSLayoutConstraint(item: label, attribute: .Leading, relatedBy: .Equal, toItem: weekLabels[index-1], attribute: .Trailing, multiplier: 1, constant: 0)
+                topConstraint = NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: yearMonthButton, attribute: .bottom, multiplier: 1, constant: 10)
+                bottomConstraint = NSLayoutConstraint(item: label, attribute: .bottom, relatedBy: .equal, toItem: calendarCollectionView, attribute: .top, multiplier: 1, constant: 0)
+                leadingConstraint = NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem: weekLabels[index-1], attribute: .trailing, multiplier: 1, constant: 0)
 
             }
 
-            let widthAttribute = NSLayoutConstraint(item: label, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: bounds.width / kNumberOfDaysInAWeek.f)
+            let widthAttribute = NSLayoutConstraint(item: label, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: bounds.width / kNumberOfDaysInAWeek.f)
             widthAttribute.priority = 900
             if let trailingConstraint = trailingConstraint {
                 addConstraint(trailingConstraint)
@@ -317,7 +317,7 @@ class CalendarView: UIView {
         }
     }
 
-    private func addLongGestureToTheCollectionView() {
+    fileprivate func addLongGestureToTheCollectionView() {
         if let _ = calendarPanGesture {
 
         } else {
@@ -329,46 +329,46 @@ class CalendarView: UIView {
         calendarPanGesture.minimumPressDuration = 0.3
         calendarPanGesture.delegate = self
         calendarPanGesture.allowableMovement = max(bounds.size.height, bounds.size.width)
-        calendarPanGesture.enabled = true
+        calendarPanGesture.isEnabled = true
     }
 
 
     //MARK: Handling the long gesture recognizer
 
-    func handleLongGesture(gestureRecognizer : UILongPressGestureRecognizer) {
+    func handleLongGesture(_ gestureRecognizer : UILongPressGestureRecognizer) {
 
         let state = gestureRecognizer.state
 
-        let locationInView = gestureRecognizer.locationInView(calendarCollectionView)
+        let locationInView = gestureRecognizer.location(in: calendarCollectionView)
 
         switch state {
-        case .Began:
-            calendarCollectionView.scrollEnabled = false
+        case .began:
+            calendarCollectionView.isScrollEnabled = false
             highlightTheCellAtPoint(locationInView, isStartingPoint: true)
-        case .Changed:
+        case .changed:
 
             if shouldChangeDirection {
-                panningDirection = pointIsGreaterThanCurrentPoint(locationInView) ? .Forward : .Backward
+                panningDirection = pointIsGreaterThanCurrentPoint(locationInView) ? .forward : .backward
                 shouldChangeDirection = false
             }
 
-            calendarCollectionView.scrollEnabled = false
+            calendarCollectionView.isScrollEnabled = false
             highlightTheCellAtPoint(locationInView, isStartingPoint: false)
-        case .Ended:
-            calendarCollectionView.scrollEnabled = true
+        case .ended:
+            calendarCollectionView.isScrollEnabled = true
             shouldChangeDirection = true
-        case .Cancelled ,.Failed:
-            calendarCollectionView.scrollEnabled = true
+        case .cancelled ,.failed:
+            calendarCollectionView.isScrollEnabled = true
             shouldChangeDirection = true
         default :
-            calendarCollectionView.scrollEnabled = true
+            calendarCollectionView.isScrollEnabled = true
             shouldChangeDirection = true
         }
     }
 
-    private func highlightTheCellAtPoint(point : CGPoint, isStartingPoint : Bool) {
+    fileprivate func highlightTheCellAtPoint(_ point : CGPoint, isStartingPoint : Bool) {
 
-        guard let indexPath = calendarCollectionView.indexPathForItemAtPoint(point) else {
+        guard let indexPath = calendarCollectionView.indexPathForItem(at: point) else {
             return
         }
         if isStartingPoint {
@@ -376,7 +376,7 @@ class CalendarView: UIView {
             currentPanningIndexPath = indexPath
             startPanningPoint = point
         }
-        let cell = calendarCollectionView.cellForItemAtIndexPath(indexPath) as? CalendarViewCell
+        let cell = calendarCollectionView.cellForItem(at: indexPath) as? CalendarViewCell
 
 //        let rowColumn = getTheCurrentRowColumnFor(indexPath)
 
@@ -396,9 +396,9 @@ class CalendarView: UIView {
 //        }
 
 
-        highlight = panningDirection == .Forward ? pointIsGreaterThanCurrentPoint(point) : !pointIsGreaterThanCurrentPoint(point)
+        highlight = panningDirection == .forward ? pointIsGreaterThanCurrentPoint(point) : !pointIsGreaterThanCurrentPoint(point)
 
-        if panningDirection == .Forward {
+        if panningDirection == .forward {
             shouldChangeDirection = pointIsGreaterThanStartingPoint(point) ? false : true
         } else {
             shouldChangeDirection = pointIsGreaterThanStartingPoint(point) ? true : false
@@ -415,7 +415,7 @@ class CalendarView: UIView {
         currentPanningIndexPath = indexPath
     }
 
-    private func pointIsGreaterThanCurrentPoint(point : CGPoint) -> Bool {
+    fileprivate func pointIsGreaterThanCurrentPoint(_ point : CGPoint) -> Bool {
         var retVal = true
         if point.x >= currentPanningPoint.x {
             retVal = true
@@ -424,7 +424,7 @@ class CalendarView: UIView {
         }
         return retVal
     }
-    private func pointIsGreaterThanStartingPoint(point : CGPoint) -> Bool {
+    fileprivate func pointIsGreaterThanStartingPoint(_ point : CGPoint) -> Bool {
         var retVal = true
         if point.x >= startPanningPoint.x {
             retVal = true
@@ -434,7 +434,7 @@ class CalendarView: UIView {
         return retVal
     }
 
-    private func getTheCurrentRowColumnFor(indexPath : NSIndexPath) -> (Int, Int) {
+    fileprivate func getTheCurrentRowColumnFor(_ indexPath : IndexPath) -> (Int, Int) {
         nsDateComponents.day = 1
         nsDateComponents.month = currentMonth
         nsDateComponents.year = currentYear
@@ -451,24 +451,24 @@ class CalendarView: UIView {
 
         //Creating the starting year according to the startingYearLimit
 
-        if let _ = startingYear, _ = endingYear {
+        if let _ = startingYear, let _ = endingYear {
 
         } else {
             dateGenerator?.delegate = self
             if let dateGenerator = dateGenerator {
-                initialDateIndex = dateGenerator.getInitialIndexForDate(NSDate()) ?? 0
+                initialDateIndex = dateGenerator.getInitialIndexForDate(Foundation.Date()) ?? 0
             }
             nsDateComponents.year = startingYearLimit
             let yearMinus20 = nsDateComponents
-            startingYear = calendar.dateByAddingComponents(yearMinus20, toDate: presentingDate, options: .WrapComponents)
+            startingYear = (calendar as NSCalendar).date(byAdding: yearMinus20, to: presentingDate, options: .wrapComponents)
 
             //Creating the starting year according to the endingYearLimit
             nsDateComponents.year = endingYearLimit
             let yearPlus20 = nsDateComponents
-            endingYear = calendar.dateByAddingComponents(yearPlus20, toDate: presentingDate, options: .WrapComponents)
+            endingYear = (calendar as NSCalendar).date(byAdding: yearPlus20, to: presentingDate, options: .wrapComponents)
         }
 
-        if let startingYear = startingYear , endingYear = endingYear {
+        if let startingYear = startingYear , let endingYear = endingYear {
 
             if dateGenerator == nil {
                 dateGenerator = DateGenerator(startingDate: startingYear, endingDate: endingYear, delegate : self)
@@ -489,13 +489,13 @@ class CalendarView: UIView {
         scrollInitially()
     }
 
-    private func scrollInitially() {
+    fileprivate func scrollInitially() {
         if !scrolledInitially {
             calendarCollectionView.setContentOffset(CGPoint(x: calendarCollectionView.bounds.width, y: 0.f), animated: false)
             scrolledInitially = true
         }
     }
-    private func addAttributesToFlowLayout() {
+    fileprivate func addAttributesToFlowLayout() {
 
         if let _ = calendarCollectionView {
             calendarCollectionView.removeFromSuperview()
@@ -506,7 +506,7 @@ class CalendarView: UIView {
             flowLayout = CalendarFlowLayout()
         }
 
-        flowLayout?.scrollDirection = .Horizontal
+        flowLayout?.scrollDirection = .horizontal
         flowLayout?.itemSize = CGSize(width: bounds.size.width / 7, height: bounds.size.height / 5)
         flowLayout?.minimumInteritemSpacing = 0.0
         flowLayout?.minimumLineSpacing = 0.0
@@ -514,55 +514,55 @@ class CalendarView: UIView {
         //TODO : remove the horizontal scroll indicator
 
         if let flowLayout = flowLayout {
-            calendarCollectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: flowLayout)
+            calendarCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
             calendarCollectionView.translatesAutoresizingMaskIntoConstraints = false
             collectionViewWidth = calendarCollectionView.frame.size.width
             collectionViewHeight = calendarCollectionView.frame.size.height
         }
     }
 
-    private func addSubviews() {
+    fileprivate func addSubviews() {
         if let calendarCollectionView = calendarCollectionView {
             addSubview(calendarCollectionView)
         }
         addSubview(yearMonthButton)
     }
 
-    private func addConstraints() {
+    fileprivate func addConstraints() {
         addConstraintToCalendar()
         addConstraintToMonthAndYearLabels()
     }
 
-    private func addConstraintToMonthAndYearLabels() {
+    fileprivate func addConstraintToMonthAndYearLabels() {
 
-        let topConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .Top, relatedBy: .Equal, toItem: self, attribute: .Top, multiplier: 1, constant: 0)
-        let leadingConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .Leading, relatedBy: .Equal, toItem: self, attribute: .Leading, multiplier: 1, constant: 10)
-        let heightConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1, constant: 30)
+        let topConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
+        let leadingConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 10)
+        let heightConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
 
         addConstraints([topConstraint, leadingConstraint])
         yearMonthButton.addConstraint(heightConstraint)
     }
     //MARK: adding constraint calendar collection view and self
-    private func addConstraintToCalendar() {
+    fileprivate func addConstraintToCalendar() {
         if let calendarCollectionView = calendarCollectionView {
 
-            let leading = NSLayoutConstraint(item: calendarCollectionView, attribute: .Leading, relatedBy: .Equal, toItem: self, attribute: .Leading, multiplier: 1.0, constant: 0)
-            let traling = NSLayoutConstraint(item: calendarCollectionView, attribute: .Trailing, relatedBy: .Equal, toItem: self, attribute: .Trailing, multiplier: 1.0, constant: 0)
-            let bottom = NSLayoutConstraint(item: calendarCollectionView, attribute: .Bottom, relatedBy: .Equal, toItem: self, attribute: .Bottom, multiplier: 1, constant: 0)
+            let leading = NSLayoutConstraint(item: calendarCollectionView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0)
+            let traling = NSLayoutConstraint(item: calendarCollectionView, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0)
+            let bottom = NSLayoutConstraint(item: calendarCollectionView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
 
             addConstraints([leading,traling,bottom])
         }
     }
 
     func reloadData() {
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             self.calendarCollectionView.reloadData()
         }
     }
 }
 
 extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
         nsDateComponents.day = 1
         nsDateComponents.month = getCurrentMonthForSection(section, month: true) + 1
@@ -571,25 +571,25 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
         return dateComponent.totalDaysInAMonthForTheCurrentDate()
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! CalendarViewCell
-        cell.dateButton.setTitle("\(indexPath.item + 1)", forState: .Normal)
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! CalendarViewCell
+        cell.dateButton.setTitle("\(indexPath.item + 1)", for: UIControlState())
 
 
-        cell.dateButton.backgroundColor = UIColor.blueColor()
+        cell.dateButton.backgroundColor = UIColor.blue
         cell.setAsCurrentDateItem = false
 
         if isPresentDateFor(indexPath){
-            cell.dateButton.backgroundColor = UIColor.redColor()
+            cell.dateButton.backgroundColor = UIColor.red
             cell.setAsCurrentDateItem = true
         }
         return cell
     }
 
-    func isPresentDateFor(indexPath : NSIndexPath) -> Bool {
+    func isPresentDateFor(_ indexPath : IndexPath) -> Bool {
         return (numberOfIterations == getTheCurrentIterationIndexForCurrentDate().0 && indexPath == (getTheCurrentIterationIndexForCurrentDate().1) && highlightCurrentDate)
     }
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         if let _ = dateGenerator {
             return kDefaultNumberOfSections
         }
@@ -597,49 +597,49 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
     }
 
     //Gives the current date index and the iteration index for the present day
-    private func getTheCurrentIterationIndexForCurrentDate() -> (Int, NSIndexPath) {
+    fileprivate func getTheCurrentIterationIndexForCurrentDate() -> (Int, IndexPath) {
 
         dateComponent.changeDateComponentsForDate(presentingDate)
         let year1 = nsDateComponents.year
         let month1 = nsDateComponents.month
 
-        dateComponent.changeDateComponentsForDate(NSDate())
+        dateComponent.changeDateComponentsForDate(Foundation.Date())
         let year2 = nsDateComponents.year
         let day2 = nsDateComponents.day
         let month2 = nsDateComponents.month
 
-        let yearDifference = year1 - year2
-        let differenceBWMonths = (yearDifference * (12 - month1 + 12 - month2))
+        let yearDifference = year1! - year2!
+        let differenceBWMonths = (yearDifference * (12 - month1! + 12 - month2!))
 
         let currentNumberOfIterationForCurrentDay = floor(differenceBWMonths.f / 3)
 
         let currentMonthIndex = differenceBWMonths % 3 + 1
-        let indexPath = NSIndexPath(forItem: day2 - 1, inSection: currentMonthIndex)
+        let indexPath = IndexPath(item: day2! - 1, section: currentMonthIndex)
 
 
         return (Int(currentNumberOfIterationForCurrentDay), indexPath)
     }
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
     }
 
-    func collectionView(collectionView: UICollectionView, didEndDisplayingCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
     }
 
-    func collectionView(collectionView: UICollectionView, willDisplayCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
     }
 
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
     }
 
-    func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
 
         //present section will be helpful to calculate the present month
 
-        currentSection = Int(floor(targetContentOffset.memory.x / calendarCollectionView.bounds.width)) + 1
+        currentSection = Int(floor(targetContentOffset.pointee.x / calendarCollectionView.bounds.width)) + 1
 
         currentMonth = getCurrentMonthForSection(currentSection - 1, month: true) + 1
         currentYear = getCurrentMonthForSection(currentSection - 1, month: false)
@@ -648,49 +648,49 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
 
             //set the content offset of the collection view to the initial section after some time say 0.15 seconds to look the scroll animation look smoother
             numberOfIterations += 1
-            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(0.15 * Double(NSEC_PER_SEC)))
-            dispatch_after(delayTime, dispatch_get_main_queue()) {
-                self.reloadCollectionViewAttributesFor(.Forward)
+            let delayTime = DispatchTime.now() + Double(Int64(0.15 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+            DispatchQueue.main.asyncAfter(deadline: delayTime) {
+                self.reloadCollectionViewAttributesFor(.forward)
             }
         }else if currentSection <= 1 {
 
             numberOfIterations -= 1
-            let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(0.15 * Double(NSEC_PER_SEC)))
-            dispatch_after(delayTime, dispatch_get_main_queue()) {
-                self.reloadCollectionViewAttributesFor(.Backward)
+            let delayTime = DispatchTime.now() + Double(Int64(0.15 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+            DispatchQueue.main.asyncAfter(deadline: delayTime) {
+                self.reloadCollectionViewAttributesFor(.backward)
             }
         }
 
         changeTheTextOfYearMonthLabel()
     }
 
-    private func changeTheTextOfYearMonthLabel() {
+    fileprivate func changeTheTextOfYearMonthLabel() {
 
-        UIView.animateWithDuration(0.2, animations: { 
+        UIView.animate(withDuration: 0.2, animations: { 
             self.yearMonthButton.alpha = 0
-            }) { (completion) in
-                UIView.animateWithDuration(0.2, animations: { 
+            }, completion: { (completion) in
+                UIView.animate(withDuration: 0.2, animations: { 
                     self.yearMonthButton.alpha = 1.0
                     if let name = Months(rawValue: self.currentMonth)?.name() {
-                        self.yearMonthButton.setTitle("\(name) \(self.currentYear)", forState: .Normal)
+                        self.yearMonthButton.setTitle("\(name) \(self.currentYear)", for: UIControlState())
                     }
                 })
-        }
+        }) 
     }
 
-    private func reloadCollectionViewAttributesFor(position : BoundaryPositions){
+    fileprivate func reloadCollectionViewAttributesFor(_ position : BoundaryPositions){
 
         //dispatch every UI updates in the main queue
 
-        dispatch_async(dispatch_get_main_queue()) {
-            var positionPoint = CGPointZero
+        DispatchQueue.main.async {
+            var positionPoint = CGPoint.zero
             switch position {
-            case .Backward:
+            case .backward:
 
                 let contentSize = self.calendarCollectionView.contentSize
                 self.calendarCollectionView.setContentOffset(CGPoint(x: contentSize.width.f - 2 * self.collectionViewWidth, y: 0.f), animated: false) //2* collectionViewWidth because to the second section the width = 2 * the collection view width
 
-            case .Forward:
+            case .forward:
 
                 positionPoint = CGPoint(x: self.calendarCollectionView.bounds.width, y: 0.f)
                 self.calendarCollectionView.setContentOffset(positionPoint, animated: false)
@@ -705,14 +705,14 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
 
 
 extension CalendarView : DateGeneratorDelegate {
-    func dateGeneratorDidFinishUpatingTheDates(generator: DateGenerator) {
+    func dateGeneratorDidFinishUpatingTheDates(_ generator: DateGenerator) {
         reloadData()
     }
 }
 
 //MARK : Date related calculation
 extension CalendarView {
-    private func getCurrentMonthForSection(section : Int, month : Bool) -> Int{
+    fileprivate func getCurrentMonthForSection(_ section : Int, month : Bool) -> Int{
         switch month {
         case true:
             let retMonth = (section + presentingMonth + rangeOfMonthToBeAdded() - 1) % 12
@@ -723,30 +723,30 @@ extension CalendarView {
         }
     }
     
-    private func changeTheDateComponent() {
+    fileprivate func changeTheDateComponent() {
         dateComponent.changeDateComponentsForDate(presentingDate)
-        presentingDay = nsDateComponents.day
-        presentingMonth = nsDateComponents.month
+        presentingDay = nsDateComponents.day!
+        presentingMonth = nsDateComponents.month!
         
         currentMonth = presentingMonth
         currentYear = presentingYear
         
-        presentingYear = nsDateComponents.year
+        presentingYear = nsDateComponents.year!
         
         flowLayout?.presentingMonth = presentingMonth
         flowLayout?.presentingYear = presentingYear
     }
     
-    private func rangeOfMonthToBeAdded() -> Int {
+    fileprivate func rangeOfMonthToBeAdded() -> Int {
         return numberOfIterations * kCellsVisibleToTheUser - 1
     }
 }
 extension CalendarView : UIGestureRecognizerDelegate{
-    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return true
     }
 }

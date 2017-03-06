@@ -15,7 +15,7 @@ class BookAddingViewModel {
     var book : Book?
     var user : User?
 
-    func updateTheBook(name : String, authorName : String, category : Book.Category, details: String?, rating : Float?, update : Bool, completion : ViewModelCompletion) {
+    func updateTheBook(_ name : String, authorName : String, category : Book.Category, details: String?, rating : Float?, update : Bool, completion : @escaping ViewModelCompletion) {
         let context = update ? self.book?.managedObjectContext : PersistenceStack.sharedInstance.createChildContext()
 
         let book : Book? = update ? self.book : context?.newObject()
@@ -41,14 +41,14 @@ class BookAddingViewModel {
         }
 
         newRatingObject?.userId = user?.userId
-        newRatingObject?.rating = rating
+        newRatingObject?.rating = rating as NSNumber?
 
-        book?.bookId = actualId
+        book?.bookId = actualId as NSNumber?
         book?.simpleString = NSAttributedString(string: "Simple Name")
         if let newRatingObjects = book?.ratings?.allObjects {
             let newRatingSet = NSMutableSet(array: newRatingObjects)
             if let newRatingObject = newRatingObject {
-                newRatingSet.addObject(newRatingObject)
+                newRatingSet.add(newRatingObject)
             }
             book?.ratings = newRatingSet
         }
@@ -65,19 +65,19 @@ class BookAddingViewModel {
                     ratingSum = CGFloat(rating)
                 }
                 for rating in ratings {
-                    if let rating = rating.rating as? Int {
+                    if let rating = (rating as AnyObject).rating as? Int {
                         ratingSum += CGFloat(rating)
                     }
                 }
                 book?.averageRating = (ratingSum / count.f)
             } else {
-                book?.averageRating = rating
+                book?.averageRating = rating as NSNumber?
             }
         }
         book?.name = name
         book?.authorId = getUserId()
         book?.authorName = authorName
-        book?.timeStamp = NSDate().timeIntervalSince1970
+        book?.timeStamp = Date().timeIntervalSince1970 as NSNumber?
 
         //WARNING: Still to implement
 
@@ -91,7 +91,7 @@ class BookAddingViewModel {
             if let book = book {
                 if let newBooks = newUser?.books {
                     let books = NSMutableSet(array: newBooks.allObjects)
-                    books.addObject(book)
+                    books.add(book)
                     newUser?.books = books
                 } else {
                     newUser?.books = NSSet(array: [book])
@@ -106,7 +106,7 @@ class BookAddingViewModel {
         }
     }
 
-    private func getUserId() -> NSNumber? {
+    fileprivate func getUserId() -> NSNumber? {
         let context = PersistenceStack.sharedInstance.mainContext
         let user : User? = context.executeTheFetchRequest(nil) { (request) in
             if let userId = self.user?.userId {

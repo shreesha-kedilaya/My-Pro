@@ -24,17 +24,14 @@ class UserBooksViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func didSelectDismiss(sender: AnyObject) {
-        dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func didSelectDismiss(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
     }
 }
 
 extension UserBooksViewController : UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-}
-
-extension UserBooksViewController: UITableViewDataSource {
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let books = viewModel.ownedBooks {
             return books.count
         } else {
@@ -42,27 +39,34 @@ extension UserBooksViewController: UITableViewDataSource {
         }
     }
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
     }
 
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
     }
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(BookListTableViewCell.storyboardId, forIndexPath: indexPath) as? BookListTableViewCell
-        cell?.selectionStyle = .None
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        return .delete
+    }
+}
+
+extension UserBooksViewController: UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: BookListTableViewCell.storyboardId, for: indexPath) as? BookListTableViewCell
+        cell?.selectionStyle = .none
         cell?.layer.cornerRadius = 10
-        cell?.index = indexPath.row
-        if let book = viewModel.ownedBooks?[indexPath.row] {
+        cell?.index = (indexPath as NSIndexPath).row
+        if let book = viewModel.ownedBooks?[(indexPath as NSIndexPath).row] {
             if let authorName = book.authorName {
                 cell?.authorLabel.text = "Author: " + authorName
             } else {
@@ -83,7 +87,7 @@ extension UserBooksViewController: UITableViewDataSource {
 
             if let averageRating = book.averageRating {
                 cell?.rating = Int(averageRating)
-                cell?.ratingLabel.text = String(averageRating)
+                cell?.ratingLabel.text = String(describing: averageRating)
             } else {
                 cell?.ratingLabel.text = String(0.0)
             }
@@ -93,18 +97,16 @@ extension UserBooksViewController: UITableViewDataSource {
         
     }
 
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
 
-    func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-        return .Delete
-    }
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            viewModel.deleteBookAt(indexPath.row) {
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            viewModel.deleteBookAt((indexPath as NSIndexPath).row) {
                 Async.main{
-                    self.usersBookTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                    self.usersBookTableView.deleteRows(at: [indexPath], with: .automatic)
                 }
             }
         }

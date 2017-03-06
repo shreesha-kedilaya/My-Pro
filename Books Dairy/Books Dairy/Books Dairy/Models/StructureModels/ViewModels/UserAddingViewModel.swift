@@ -10,8 +10,8 @@ import Foundation
 typealias CoreDataCompletion = (() -> Void)
 class UserAddingViewModel {
 
-    func addTheUserToCoreData(name : String?, info : String?, completion : CoreDataCompletion) {
-        if let userName = name , info = info {
+    func addTheUserToCoreData(_ name : String?, info : String?, completion : @escaping CoreDataCompletion) {
+        if let userName = name , let info = info {
             let context = PersistenceStack.sharedInstance.createChildContext()
             let user : User? = context.newObject()
 
@@ -28,8 +28,8 @@ class UserAddingViewModel {
             } else {
                 user?.userId = 100
             }
-            user?.timeStamp = NSDate().timeIntervalSince1970
-            context.performBlock({ 
+            user?.timeStamp = Date().timeIntervalSince1970 as NSNumber?
+            context.perform({ 
                 context.AsynchronouslySave({ 
                     completion()
                 })

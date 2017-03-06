@@ -12,52 +12,55 @@ import UIKit
 extension NSManagedObject {
     class func entityClassName() -> String {
         let name = NSStringFromClass(self)
-        if let className = name.componentsSeparatedByString(".").last{
+        if let className = name.components(separatedBy: ".").last{
             return className
         }
         return ""
     }
 
     convenience init(managedObjectContext: NSManagedObjectContext) {
-        let eName = self.dynamicType.entityClassName()
-        let entity = NSEntityDescription.entityForName(eName, inManagedObjectContext: managedObjectContext)
+        let eName = type(of: self).entityClassName()
+        let entity = NSEntityDescription.entity(forEntityName: eName, in: managedObjectContext)
         if let entity = entity {
-            self.init(entity: entity, insertIntoManagedObjectContext: managedObjectContext)
+            self.init(entity: entity, insertInto: managedObjectContext)
         } else {
             fatalError("Dont have the entity name")
         }
     }
 }
 extension NSManagedObject {
-    func addObject<T: AnyObject>(value: T, toSetWithKey key: String) {
-        let set = self.mutableSetValueForKey(key)
-        set.addObject(value)
+    func addObject<T: AnyObject>(_ value: T, toSetWithKey key: String) {
+        let set = self.mutableSetValue(forKey: key)
+        set.add(value)
     }
 
-    func removeObject<T: AnyObject>(value: T, fromSetWithKey key: String) {
-        let set = self.mutableSetValueForKey(key)
-        set.removeObject(value)
+    func removeObject<T: AnyObject>(_ value: T, fromSetWithKey key: String) {
+        let set = self.mutableSetValue(forKey: key)
+        set.remove(value)
     }
+
     static func fetchRequest() -> NSFetchRequest {
         return NSFetchRequest(entityName: entityClassName())
     }
+
+    static func fetchRequest() -> NSFetchRequest
 }
 
 extension NSManagedObjectContext {
     func newObject<T: NSManagedObject>() -> T? {
-        guard let object = NSEntityDescription.insertNewObjectForEntityForName(T.entityClassName(), inManagedObjectContext: self) as? T
+        guard let object = NSEntityDescription.insertNewObject(forEntityName: T.entityClassName(), into: self) as? T
             else { fatalError("Invalid Core Data Model.") }
         return object
     }
 
-    func executeTheFetchRequest<T: NSManagedObject>(error: NSErrorPointer = nil, builder: ((NSFetchRequest) -> ())? = nil) -> [T]? {
+    func executeTheFetchRequest<T: NSManagedObject>(_ error: NSErrorPointer? = nil, builder: ((NSFetchRequest) -> ())? = nil) -> [T]? {
         let request = NSFetchRequest(entityName: T.entityClassName())
         request.returnsObjectsAsFaults = false
         builder?(request)
 
         var object : [T]?
         do {
-            object = try executeFetchRequest(request) as? [T]
+            object = try fetch(request) as? [T]
 
         } catch _ as NSError {
             object = nil
@@ -67,10 +70,10 @@ extension NSManagedObjectContext {
         return object
     }
 
-    private func saveData(completion : () -> Void) {
+    fileprivate func saveData(_ completion : () -> Void) {
         do {
             try save()
-            if let parentContext = parentContext {
+            if let parentContext = parent {
                 parentContext.saveData({
                     completion()
                 })
@@ -84,15 +87,15 @@ extension NSManagedObjectContext {
         }
     }
 
-    func AsynchronouslySave(dataSaved : ViewModelCompletion) {
-        performBlock {
+    func AsynchronouslySave(_ dataSaved : @escaping ViewModelCompletion) {
+        perform {
             self.saveData{
                 dataSaved()
             }
         }
     }
-    func SynchronouslySave(dataSaved : ViewModelCompletion) {
-        performBlockAndWait {
+    func SynchronouslySave(_ dataSaved : @escaping ViewModelCompletion) {
+        performAndWait {
 
             self.saveData{
                 dataSaved()

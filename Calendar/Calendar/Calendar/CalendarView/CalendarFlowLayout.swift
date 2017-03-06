@@ -10,37 +10,37 @@ import UIKit
 
 class CalendarFlowLayout: UICollectionViewFlowLayout {
 
-    private var collectionViewAttributes = [String : UICollectionViewLayoutAttributes]()
-    private let kCellsVisibleToTheUser = 3
+    fileprivate var collectionViewAttributes = [String : UICollectionViewLayoutAttributes]()
+    fileprivate let kCellsVisibleToTheUser = 3
 
     var presentingMonth = 0
     var presentingYear = 0
     var currentIterationIndex = 0
 
-    override func prepareLayout() {
-        super.prepareLayout()
+    override func prepare() {
+        super.prepare()
 
         applyAttributes()
     }
-    override func collectionViewContentSize() -> CGSize {
-        super.collectionViewContentSize()
+
+    override var collectionViewContentSize : CGSize {
         if let collectionView = collectionView {
-            return CGSize(width: collectionView.numberOfSections().f * collectionView.frame.size.width, height: collectionView.frame.size.height)
+            return CGSize(width: collectionView.numberOfSections.f * collectionView.frame.size.width, height: collectionView.frame.size.height)
         }else {
-            return CGSizeZero
+            return CGSize.zero
         }
     }
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        super.layoutAttributesForElementsInRect(rect)
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        super.layoutAttributesForElements(in: rect)
 
         var filteredAttributes = [UICollectionViewLayoutAttributes]()
 
         if let collectionView = collectionView {
-            for section in 0..<collectionView.numberOfSections()  {
-                for item in 0..<collectionView.numberOfItemsInSection(section) {
+            for section in 0..<collectionView.numberOfSections  {
+                for item in 0..<collectionView.numberOfItems(inSection: section) {
                     
-                    if CGRectIntersectsRect(rect, collectionViewAttributes[layoutKeyForItemAtIndexPath(NSIndexPath(forItem: item, inSection: section))]!.frame) {
-                        filteredAttributes.append(collectionViewAttributes[layoutKeyForItemAtIndexPath(NSIndexPath(forItem: item, inSection: section))]!)
+                    if rect.intersects(collectionViewAttributes[layoutKeyForItemAtIndexPath(IndexPath(item: item, section: section))]!.frame) {
+                        filteredAttributes.append(collectionViewAttributes[layoutKeyForItemAtIndexPath(IndexPath(item: item, section: section))]!)
                     }
                 }
             }
@@ -51,27 +51,27 @@ class CalendarFlowLayout: UICollectionViewFlowLayout {
         return filteredAttributes
     }
 
-    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        super.layoutAttributesForItemAtIndexPath(indexPath)
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        super.layoutAttributesForItem(at: indexPath)
         let key = layoutKeyForItemAtIndexPath(indexPath)
         return collectionViewAttributes[key]
     }
-    override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
-        super.shouldInvalidateLayoutForBoundsChange(newBounds)
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        super.shouldInvalidateLayout(forBoundsChange: newBounds)
 
         if let collectionView = collectionView {
-            return !(CGSizeEqualToSize(newBounds.size, collectionView.frame.size))
+            return !(newBounds.size.equalTo(collectionView.frame.size))
         }else {
             return false
         }
     }
 
-    private func applyAttributes() {
+    fileprivate func applyAttributes() {
 
         collectionViewAttributes.removeAll()
 
         if let collectionView = collectionView {
-            let numberOfSections = collectionView.numberOfSections()
+            let numberOfSections = collectionView.numberOfSections
             var yOffset = 0.f
 
             for section in 0..<numberOfSections {
@@ -84,22 +84,22 @@ class CalendarFlowLayout: UICollectionViewFlowLayout {
 
                 let heightForThisSectionItems = collectionView.frame.height / dateComponent.getNumberOfWeekForCurrentDate().f
 
-                let numberOfItems = collectionView.numberOfItemsInSection(section)
+                let numberOfItems = collectionView.numberOfItems(inSection: section)
                 var xOffset = (section.f * collectionView.frame.size.width) + firstDay.f * itemSize.width
 
                 for item in 0..<numberOfItems {
-                    let indexPath = NSIndexPath(forItem: item, inSection: section)
+                    let indexPath = IndexPath(item: item, section: section)
 
-                    let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+                    let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
 
                     let key = layoutKeyForItemAtIndexPath(indexPath)
 
-                    attributes.frame = CGRectMake(xOffset, yOffset, itemSize.width, heightForThisSectionItems)
+                    attributes.frame = CGRect(x: xOffset, y: yOffset, width: itemSize.width, height: heightForThisSectionItems)
 
                     collectionViewAttributes[key] = attributes
 
                     let nextItem = item + 1
-                    xOffset = getTheXOffsetFor(indexPath: NSIndexPath(forItem: nextItem, inSection: section) , increaseWidth: attributes.frame.size.width, oldXOffset: xOffset, firstDay: firstDay)
+                    xOffset = getTheXOffsetFor(indexPath: IndexPath(item: nextItem, section: section) , increaseWidth: attributes.frame.size.width, oldXOffset: xOffset, firstDay: firstDay)
 
                     yOffset = ((nextItem + firstDay) % 7 == 0) ? (yOffset + attributes.size.height) : yOffset
                 }
@@ -108,7 +108,7 @@ class CalendarFlowLayout: UICollectionViewFlowLayout {
             }
         }
     }
-    private func getTheXOffsetFor(indexPath indexPath : NSIndexPath, increaseWidth : CGFloat, oldXOffset : CGFloat, firstDay : Int) -> CGFloat {
+    fileprivate func getTheXOffsetFor(indexPath : IndexPath, increaseWidth : CGFloat, oldXOffset : CGFloat, firstDay : Int) -> CGFloat {
         if let collectionView = collectionView {
 
             let xOffset = ((indexPath.item + firstDay) % 7 == 0) ? (indexPath.section.f * collectionView.frame.size.width) : oldXOffset + increaseWidth
@@ -121,12 +121,12 @@ class CalendarFlowLayout: UICollectionViewFlowLayout {
     }
 }
 extension CalendarFlowLayout {
-    private func layoutKeyForItemAtIndexPath(indexPath : NSIndexPath)-> String {
+    fileprivate func layoutKeyForItemAtIndexPath(_ indexPath : IndexPath)-> String {
         return "\(indexPath.section)_\(indexPath.item)"
     }
 }
 extension CalendarFlowLayout {
-    private func getCurrentMonthForSection(section : Int, month : Bool) -> Int{
+    fileprivate func getCurrentMonthForSection(_ section : Int, month : Bool) -> Int{
         switch month {
         case true:
             let retMonth = (section + presentingMonth + rangeOfMonthToBeAdded() - 1) % 12
@@ -137,13 +137,13 @@ extension CalendarFlowLayout {
         }
     }
 
-    private func rangeOfMonthToBeAdded() -> Int{
+    fileprivate func rangeOfMonthToBeAdded() -> Int{
         return currentIterationIndex * kCellsVisibleToTheUser
     }
 }
 
 extension Dictionary {
-    func valuesForKeys(keys : [Key]) -> [Value?] {
+    func valuesForKeys(_ keys : [Key]) -> [Value?] {
         return keys.map{self[$0]}
     }
 }

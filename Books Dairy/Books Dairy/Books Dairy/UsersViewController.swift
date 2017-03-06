@@ -14,14 +14,14 @@ class UsersViewController: UIViewController {
 
     var viewModel = UserViewModel()
 
-    private let refreshaControl = UIRefreshControl()
+    fileprivate let refreshaControl = UIRefreshControl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         initialAppearence()
         // Do any additional setup after loading the view.
     }
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         Async.after(0.0) {
@@ -29,19 +29,19 @@ class UsersViewController: UIViewController {
                 self.usersTableView.reloadData()
             }
         }
-        if let users = viewModel.users where users.count > 0{
+        if let users = viewModel.users , users.count > 0{
             title = "Users"
         } else {
             title = "Tap on 'Add' to add Users"
         }
     }
 
-    private func initialAppearence() {
-        refreshaControl.tintColor = UIColor.whiteColor()
+    fileprivate func initialAppearence() {
+        refreshaControl.tintColor = UIColor.white
 
-        refreshaControl.addTarget(self, action: #selector(UsersViewController.refresh), forControlEvents: .ValueChanged)
+        refreshaControl.addTarget(self, action: #selector(UsersViewController.refresh), for: .valueChanged)
         usersTableView.addSubview(refreshaControl)
-        usersTableView.separatorStyle = .None
+        usersTableView.separatorStyle = .none
 
     }
 
@@ -60,8 +60,8 @@ class UsersViewController: UIViewController {
 }
 
 extension UsersViewController: UITableViewDataSource{
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let users = viewModel.users where users.count > 0 {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let users = viewModel.users , users.count > 0 {
             return users.count
         } else {
             return 0
@@ -69,43 +69,43 @@ extension UsersViewController: UITableViewDataSource{
 
 
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("UsersTableViewCell", forIndexPath: indexPath) as? UsersTableViewCell
-        cell?.selectionStyle = .None
-        if let user = viewModel.users?[indexPath.row] {
-            cell?.index = indexPath.row
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UsersTableViewCell", for: indexPath) as? UsersTableViewCell
+        cell?.selectionStyle = .none
+        if let user = viewModel.users?[(indexPath as NSIndexPath).row] {
+            cell?.index = (indexPath as NSIndexPath).row
             cell?.userNameLabel.text = user.name
         }
         return cell!
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
 
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
     }
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
 
-    func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-        return .Delete
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        return .delete
     }
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            viewModel.deleteTheUserAt(indexPath.row) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            viewModel.deleteTheUserAt((indexPath as NSIndexPath).row) {
                 Async.main{
-                    self.usersTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+                    self.usersTableView.deleteRows(at: [indexPath], with: .automatic)
                 }
             }
         }
     }
 }
 extension UsersViewController: UITableViewDelegate {
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let bookListVC = storyboard?.instantiateViewControllerWithIdentifier("BookListViewController") as? BookListViewController
-        if let user = viewModel.users?[indexPath.row] {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let bookListVC = storyboard?.instantiateViewController(withIdentifier: "BookListViewController") as? BookListViewController
+        if let user = viewModel.users?[(indexPath as NSIndexPath).row] {
             bookListVC?.viewModel.user = user
         }
         navigationController?.pushViewController(bookListVC!, animated: true)
@@ -113,9 +113,9 @@ extension UsersViewController: UITableViewDelegate {
 }
 
 extension UsersViewController : UsersTableViewCellDelegate {
-    func usersTableViewCellDidSelectEditButtunAtIndex(index: Int) {
-        let userAddVC = storyboard?.instantiateViewControllerWithIdentifier("UserAddingViewController") as? UserAddingViewController
-        userAddVC?.userAddType = .Edit
-        navigationController?.presentViewController(userAddVC!, animated: true, completion: nil)
+    func usersTableViewCellDidSelectEditButtunAtIndex(_ index: Int) {
+        let userAddVC = storyboard?.instantiateViewController(withIdentifier: "UserAddingViewController") as? UserAddingViewController
+        userAddVC?.userAddType = .edit
+        navigationController?.present(userAddVC!, animated: true, completion: nil)
     }
 }

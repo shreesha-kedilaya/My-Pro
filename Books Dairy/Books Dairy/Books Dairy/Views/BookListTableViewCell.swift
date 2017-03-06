@@ -8,9 +8,9 @@
 
 import UIKit
 protocol BookListTableViewCellDelegate : class {
-    func bookListTableViewCellDidSelectNextButtonAt(index : Int)
-    func readButtonDidClickAt(index:Int)
-    func wishButtonDidClickAt(index:Int)
+    func bookListTableViewCellDidSelectNextButtonAt(_ index : Int)
+    func readButtonDidClickAt(_ index:Int)
+    func wishButtonDidClickAt(_ index:Int)
 }
 
 class BookListTableViewCell: UITableViewCell {
@@ -28,7 +28,7 @@ class BookListTableViewCell: UITableViewCell {
     @IBOutlet weak var readButton: UIButton?
     @IBOutlet weak var bookNameLabel: UILabel!
     var highlightColor = UIColor(red: 30/255, green: 66/255, blue: 117/255, alpha: 1)
-    var unhighlightedColor = UIColor.whiteColor()
+    var unhighlightedColor = UIColor.white
     var index = 0
     var rating = 0 {
         didSet {
@@ -36,16 +36,16 @@ class BookListTableViewCell: UITableViewCell {
         }
     }
 
-    var readingCategory = BookCategory.ReadingCategory.None {
+    var readingCategory = BookCategory.ReadingCategory.none {
         didSet {
             switch readingCategory {
-            case .ReadList:
+            case .readList:
                 readButton?.backgroundColor = highlightColor
                 wishButton?.backgroundColor = unhighlightedColor
-            case .WishList:
+            case .wishList:
                 readButton?.backgroundColor = unhighlightedColor
                 wishButton?.backgroundColor = highlightColor
-            case .None :
+            case .none :
                 readButton?.backgroundColor = unhighlightedColor
                 wishButton?.backgroundColor = unhighlightedColor
             }
@@ -62,24 +62,24 @@ class BookListTableViewCell: UITableViewCell {
         addShadowToTheContainer()
 
     }
-    @IBAction func readButtonDidClick(sender: AnyObject) {
-        readingCategory = .ReadList
+    @IBAction func readButtonDidClick(_ sender: AnyObject) {
+        readingCategory = .readList
         delegate?.readButtonDidClickAt(index)
     }
-    private func addShadowToTheContainer() {
+    fileprivate func addShadowToTheContainer() {
         bookShelfView.layer.shadowRadius = 5
         bookShelfView.layer.shadowOpacity = 0.5
 
         layer.shadowRadius = 5
         layer.shadowOpacity = 0.5
-        backgroundColor = UIColor.whiteColor()
+        backgroundColor = UIColor.white
     }
-    @IBAction func wishButtonDidClick(sender: AnyObject) {
-        readingCategory = .WishList
+    @IBAction func wishButtonDidClick(_ sender: AnyObject) {
+        readingCategory = .wishList
         delegate?.wishButtonDidClickAt(index)
     }
 
-    @IBAction func nextButtonDidClick(sender: AnyObject) {
+    @IBAction func nextButtonDidClick(_ sender: AnyObject) {
 
         delegate?.bookListTableViewCellDidSelectNextButtonAt(index)
 
@@ -87,7 +87,7 @@ class BookListTableViewCell: UITableViewCell {
 }
 
 extension BookListTableViewCell : BookRatingViewDelegate {
-    func bookRatingViewDidSelectRatingButtonsUptoIndex(ratingIndex: Int) {
+    func bookRatingViewDidSelectRatingButtonsUptoIndex(_ ratingIndex: Int) {
 
     }
 }

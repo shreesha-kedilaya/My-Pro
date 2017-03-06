@@ -18,10 +18,10 @@ class BookListViewModel{
 
     var currentBooks : [Book]?
 
-    func fetchAllData(completion : ViewModelCompletion) {
+    func fetchAllData(_ completion : @escaping ViewModelCompletion) {
         let context = PersistenceStack.sharedInstance.mainContext
         userBooks = user?.books?.allObjects as? [Book]
-        context.performBlock {
+        context.perform {
             self.fetchAllBooks(context) {
                 self.fetchReadList(context)
                 self.fetchWishList(context)
@@ -30,25 +30,25 @@ class BookListViewModel{
         }
     }
 
-    func fetchUser(completion : ViewModelCompletion) {
+    func fetchUser(_ completion : @escaping ViewModelCompletion) {
         let context = PersistenceStack.sharedInstance.mainContext
         let user : User? = context.executeTheFetchRequest(nil) { (request) in
             if let userId = self.user?.userId {
                 request.predicate = NSPredicate(format: "userId == %@", userId)
             }
         }?.first
-        context.performBlock {
+        context.perform {
             self.user = user
             completion()
         }
     }
 
-    private func fetchReadList(context : NSManagedObjectContext) {
+    fileprivate func fetchReadList(_ context : NSManagedObjectContext) {
 
         readList = []
         let readingCategories : [BookCategory]? = context.executeTheFetchRequest(nil) {
             if let userId = self.user?.userId {
-                $0.predicate = NSPredicate(format: "userId == %@ AND category == %d", userId, BookCategory.ReadingCategory.ReadList.rawValue)
+                $0.predicate = NSPredicate(format: "userId == %@ AND category == %d", userId, BookCategory.ReadingCategory.readList.rawValue)
             }
         }
         if let readingCategories = readingCategories {
@@ -59,8 +59,8 @@ class BookListViewModel{
             }
         }
 
-        let sortedArray = readList?.sort({ (book1, book2) -> Bool in
-            if let timestamp1 = book1.timeStamp as? Double, timestamp2 = book2.timeStamp as? Double {
+        let sortedArray = readList?.sorted(by: { (book1, book2) -> Bool in
+            if let timestamp1 = book1.timeStamp as? Double, let timestamp2 = book2.timeStamp as? Double {
                 return timestamp1 > timestamp2
             } else {
                 return false
@@ -70,12 +70,12 @@ class BookListViewModel{
         readList = sortedArray
     }
 
-    private func fetchWishList(context:NSManagedObjectContext) {
+    fileprivate func fetchWishList(_ context:NSManagedObjectContext) {
 
         wishList = []
         let readingCategories : [BookCategory]? = context.executeTheFetchRequest(nil) {
             if let userId = self.user?.userId {
-                $0.predicate = NSPredicate(format: "userId == %@ AND category == %d", userId, BookCategory.ReadingCategory.WishList.rawValue)
+                $0.predicate = NSPredicate(format: "userId == %@ AND category == %d", userId, BookCategory.ReadingCategory.wishList.rawValue)
             }
         }
         if let readingCategories = readingCategories {
@@ -86,8 +86,8 @@ class BookListViewModel{
             }
         }
 
-        let sortedArray = wishList?.sort({ (book1, book2) -> Bool in
-            if let timestamp1 = book1.timeStamp as? Double, timestamp2 = book2.timeStamp as? Double {
+        let sortedArray = wishList?.sorted(by: { (book1, book2) -> Bool in
+            if let timestamp1 = book1.timeStamp as? Double, let timestamp2 = book2.timeStamp as? Double {
                 return timestamp1 > timestamp2
             } else {
                 return false
@@ -96,50 +96,50 @@ class BookListViewModel{
         wishList = sortedArray
     }
 
-    private func fetchAllBooks(context: NSManagedObjectContext, completion : ViewModelCompletion) {
+    fileprivate func fetchAllBooks(_ context: NSManagedObjectContext, completion : @escaping ViewModelCompletion) {
         let books : [Book]? = context.executeTheFetchRequest()
-        let sortedArray = books?.sort({ (book1, book2) -> Bool in
-            if let timestamp1 = book1.timeStamp as? Double, timestamp2 = book2.timeStamp as? Double {
+        let sortedArray = books?.sorted(by: { (book1, book2) -> Bool in
+            if let timestamp1 = book1.timeStamp as? Double, let timestamp2 = book2.timeStamp as? Double {
                 return timestamp1 > timestamp2
             } else {
                 return false
             }
         })
-        context.performBlockAndWait { 
+        context.performAndWait { 
             self.allBooks = sortedArray
             completion()
         }
     }
 
-    func addToReadList(book : Book, completion : ViewModelCompletion) {
-        addBookToTypeOfCategoty(book, category: .ReadList) { 
+    func addToReadList(_ book : Book, completion : @escaping ViewModelCompletion) {
+        addBookToTypeOfCategoty(book, category: .readList) { 
             completion()
         }
     }
 
-    func addToWishList(book:Book, completion : ViewModelCompletion){
-        addBookToTypeOfCategoty(book, category: .WishList) { 
+    func addToWishList(_ book:Book, completion : @escaping ViewModelCompletion){
+        addBookToTypeOfCategoty(book, category: .wishList) { 
             completion()
         }
     }
 
-    private func addBookToTypeOfCategoty(book : Book, category : BookCategory.ReadingCategory, completion : ViewModelCompletion) {
+    fileprivate func addBookToTypeOfCategoty(_ book : Book, category : BookCategory.ReadingCategory, completion : ViewModelCompletion) {
 
         let context = book.managedObjectContext
         var categoryObject : BookCategory? = context?.executeTheFetchRequest(nil) {
-            if let userId = self.user?.userId , bookId = book.bookId {
+            if let userId = self.user?.userId , let bookId = book.bookId {
                 $0.predicate = NSPredicate(format: "userId == %@ AND book.bookId == %@", userId, bookId)
             }
         }?.first
 
         if let categoryObject = categoryObject {
             categoryObject.book = book
-            categoryObject.category = category.rawValue
+            categoryObject.category = category.rawValue as NSNumber?
             categoryObject.userId = user?.userId
         } else {
             categoryObject = context?.newObject()
             categoryObject?.book = book
-            categoryObject?.category = category.rawValue
+            categoryObject?.category = category.rawValue as NSNumber?
             categoryObject?.userId = user?.userId
         }
 

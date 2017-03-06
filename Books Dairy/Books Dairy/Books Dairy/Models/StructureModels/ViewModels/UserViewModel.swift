@@ -13,9 +13,9 @@ class UserViewModel {
 
     var users : [User]?
 
-    func fetchUsers(completion : ViewModelCompletion) {
+    func fetchUsers(_ completion : @escaping ViewModelCompletion) {
         let context = PersistenceStack.sharedInstance.mainContext
-        context.performBlock { 
+        context.perform { 
             let usersData : [User]? = context.executeTheFetchRequest()
             self.users = usersData
             completion()
@@ -23,12 +23,12 @@ class UserViewModel {
 
     }
 
-    func deleteTheUserAt(index : Int, completion : ViewModelCompletion) {
+    func deleteTheUserAt(_ index : Int, completion : ViewModelCompletion) {
         let context = PersistenceStack.sharedInstance.mainContext
         let user = users?[index]
         if let user = user {
-            context.deleteObject(user)
-            users?.removeAtIndex(index)
+            context.delete(user)
+            users?.remove(at: index)
             PersistenceStack.sharedInstance.save()
             completion()
         }

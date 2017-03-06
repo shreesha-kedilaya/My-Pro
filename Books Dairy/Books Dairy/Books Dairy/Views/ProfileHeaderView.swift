@@ -9,13 +9,13 @@
 import UIKit
 
 enum SelectedSegement {
-    case Read
-    case Wish
-    case AllBooks
+    case read
+    case wish
+    case allBooks
 }
 
 protocol ProfileHeaderViewDelegate: class {
-    func profileHeaderViewDidClickSegmentAt(segment : SelectedSegement)
+    func profileHeaderViewDidClickSegmentAt(_ segment : SelectedSegement)
 }
 
 class ProfileHeaderView: UIView {
@@ -25,7 +25,7 @@ class ProfileHeaderView: UIView {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var readSegmentButton: UIButton!
     @IBOutlet weak var wishSegmentButton: UIButton!
-    var selectedSegment : SelectedSegement = .AllBooks {
+    var selectedSegment : SelectedSegement = .allBooks {
         didSet {
             changeTheSelectionState()
         }
@@ -38,17 +38,17 @@ class ProfileHeaderView: UIView {
         changeTheSelectionState()
     }
 
-    private func changeTheSelectionState() {
+    fileprivate func changeTheSelectionState() {
         switch selectedSegment {
-        case .Read:
+        case .read:
             readSegmentButton.backgroundColor = UIColor(red: 54/255, green: 107/255, blue: 206/255, alpha: 1.0)
             wishSegmentButton.backgroundColor = UIColor(red: 43/255, green: 85/255, blue: 162/255, alpha: 1.0)
             allBooksSegmentButton.backgroundColor = UIColor(red: 43/255, green: 85/255, blue: 162/255, alpha: 1.0)
-        case .Wish:
+        case .wish:
             wishSegmentButton.backgroundColor = UIColor(red: 54/255, green: 107/255, blue: 206/255, alpha: 1.0)
             readSegmentButton.backgroundColor = UIColor(red: 43/255, green: 85/255, blue: 162/255, alpha: 1.0)
             allBooksSegmentButton.backgroundColor = UIColor(red: 43/255, green: 85/255, blue: 162/255, alpha: 1.0)
-        case .AllBooks:
+        case .allBooks:
             allBooksSegmentButton.backgroundColor = UIColor(red: 54/255, green: 107/255, blue: 206/255, alpha: 1.0)
             wishSegmentButton.backgroundColor = UIColor(red: 43/255, green: 85/255, blue: 162/255, alpha: 1.0)
             readSegmentButton.backgroundColor = UIColor(red: 43/255, green: 85/255, blue: 162/255, alpha: 1.0)
@@ -56,17 +56,17 @@ class ProfileHeaderView: UIView {
         }
     }
 
-    @IBAction func readSegmentDidClick(sender: AnyObject) {
-        selectedSegment = .Read
-        delegate?.profileHeaderViewDidClickSegmentAt(.Read)
+    @IBAction func readSegmentDidClick(_ sender: AnyObject) {
+        selectedSegment = .read
+        delegate?.profileHeaderViewDidClickSegmentAt(.read)
     }
 
-    @IBAction func wishSegmentDidClick(sender: AnyObject) {
-        selectedSegment = .Wish
-        delegate?.profileHeaderViewDidClickSegmentAt(.Wish)
+    @IBAction func wishSegmentDidClick(_ sender: AnyObject) {
+        selectedSegment = .wish
+        delegate?.profileHeaderViewDidClickSegmentAt(.wish)
     }
-    @IBAction func allBooksDidClick(sender: AnyObject) {
-        selectedSegment = .AllBooks
-        delegate?.profileHeaderViewDidClickSegmentAt(.AllBooks)
+    @IBAction func allBooksDidClick(_ sender: AnyObject) {
+        selectedSegment = .allBooks
+        delegate?.profileHeaderViewDidClickSegmentAt(.allBooks)
     }
 }

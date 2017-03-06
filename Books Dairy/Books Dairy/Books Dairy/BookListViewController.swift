@@ -25,28 +25,28 @@ class BookListViewController: UIViewController {
         }
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
         if segue.identifier == "UserBooksNavigationController" {
-            let userBookListNVC = segue.destinationViewController as? UINavigationController
+            let userBookListNVC = segue.destination as? UINavigationController
             let userBookListVC = userBookListNVC?.visibleViewController as? UserBooksViewController
             if let ownedBooks = viewModel.userBooks {
                 userBookListVC?.viewModel.ownedBooks = ownedBooks
             }
             userBookListVC?.viewModel.user = viewModel.user
         } else if segue.identifier == "BookAddNavigationController" {
-            let bookAddNVC = segue.destinationViewController as? UINavigationController
+            let bookAddNVC = segue.destination as? UINavigationController
             let bookAddVC = bookAddNVC?.visibleViewController as? BookAddViewController
             bookAddVC?.delegate = self
         }
     }
 
-    private func initialAppearence() {
+    fileprivate func initialAppearence() {
         tableViewBookList.tableHeaderView = profileHeaderView
 
-        refreshaControl.tintColor = UIColor.whiteColor()
+        refreshaControl.tintColor = UIColor.white
 
-        refreshaControl.addTarget(self, action: #selector(UsersViewController.refresh), forControlEvents: .ValueChanged)
+        refreshaControl.addTarget(self, action: #selector(UsersViewController.refresh), for: .valueChanged)
         tableViewBookList.addSubview(refreshaControl)
         profileHeaderView.delegate = self
 
@@ -54,26 +54,26 @@ class BookListViewController: UIViewController {
         updateTheHeaderView()
     }
 
-    private func updateTheUI() {
+    fileprivate func updateTheUI() {
         Async.main { 
 
             switch self.profileHeaderView.selectedSegment {
-            case .AllBooks:
+            case .allBooks:
                 self.viewModel.currentBooks = self.viewModel.allBooks
-            case .Read:
+            case .read:
                 self.viewModel.currentBooks = self.viewModel.readList
-            case .Wish:
+            case .wish:
                 self.viewModel.currentBooks = self.viewModel.wishList
             }
-            self.tableViewBookList.reloadSections(NSIndexSet(index:0), withRowAnimation: .Automatic)
+            self.tableViewBookList.reloadSections(IndexSet(integer:0), with: .automatic)
             self.updateTheHeaderView()
         }
     }
 
-    private func updateTheHeaderView(){
+    fileprivate func updateTheHeaderView(){
 
         profileHeaderView.nameLabel.text = viewModel.user?.name
-        profileHeaderView.departmentLabel.text = String(viewModel.user?.info)
+        profileHeaderView.departmentLabel.text = String(describing: viewModel.user?.info)
 
     }
 
@@ -92,15 +92,15 @@ extension BookListViewController : UITableViewDelegate {
 }
 
 extension BookListViewController : UITableViewDataSource {
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(BookListTableViewCell.storyboardId, forIndexPath: indexPath) as? BookListTableViewCell
-        cell?.selectionStyle = .None
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: BookListTableViewCell.storyboardId, for: indexPath) as? BookListTableViewCell
+        cell?.selectionStyle = .none
         cell?.layer.cornerRadius = 10
-        cell?.index = indexPath.row
+        cell?.index = (indexPath as NSIndexPath).row
         cell?.delegate = self
-        cell?.readingCategory = .None
+        cell?.readingCategory = .none
 
-        if let book = viewModel.currentBooks?[indexPath.row] {
+        if let book = viewModel.currentBooks?[(indexPath as NSIndexPath).row] {
             if let authorName = book.authorName {
                 cell?.authorLabel.text = "Author: " + authorName
             } else {
@@ -122,7 +122,7 @@ extension BookListViewController : UITableViewDataSource {
             if let averageRating = book.averageRating {
                 if (averageRating as Float) <= 5 {
                     cell?.rating = Int(averageRating)
-                    cell?.ratingLabel.text = String(averageRating)
+                    cell?.ratingLabel.text = String(describing: averageRating)
                 }
             } else {
                 cell?.ratingLabel.text = String(0.0)
@@ -134,34 +134,34 @@ extension BookListViewController : UITableViewDataSource {
         return cell!
     }
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let count = viewModel.currentBooks?.count {
             return count
         }
         return 0
 
     }
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
-    func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return UIView(frame: CGRectZero)
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView(frame: CGRect.zero)
     }
 }
 
 extension BookListViewController : ProfileHeaderViewDelegate {
-    func profileHeaderViewDidClickSegmentAt(segment: SelectedSegement) {
+    func profileHeaderViewDidClickSegmentAt(_ segment: SelectedSegement) {
 
         switch segment {
-        case .AllBooks:
+        case .allBooks:
             viewModel.currentBooks = viewModel.allBooks
-        case .Read:
+        case .read:
             viewModel.currentBooks = viewModel.readList
-        case .Wish:
+        case .wish:
             viewModel.currentBooks = viewModel.wishList
         }
 
@@ -171,13 +171,13 @@ extension BookListViewController : ProfileHeaderViewDelegate {
 
 extension BookListViewController : BookListTableViewCellDelegate {
 
-    func bookListTableViewCellDidSelectNextButtonAt(index: Int) {
+    func bookListTableViewCellDidSelectNextButtonAt(_ index: Int) {
         
     }
 
-    func readButtonDidClickAt(index:Int) {
-        let alertAction = UIAlertController(title: "Add to Read List", message: "Are you sure you want to add this book to the Read List", preferredStyle: .Alert)
-        let yesAction = UIAlertAction(title: "Add To Read List", style: .Default) { (action) in
+    func readButtonDidClickAt(_ index:Int) {
+        let alertAction = UIAlertController(title: "Add to Read List", message: "Are you sure you want to add this book to the Read List", preferredStyle: .alert)
+        let yesAction = UIAlertAction(title: "Add To Read List", style: .default) { (action) in
             if let currentBooks = self.viewModel.currentBooks {
                 self.viewModel.addToReadList(currentBooks[index]) {
                     self.viewModel.fetchAllData({ 
@@ -186,15 +186,15 @@ extension BookListViewController : BookListTableViewCellDelegate {
                 }
             }
         }
-        let noAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let noAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alertAction.addAction(noAction)
         alertAction.addAction(yesAction)
-        navigationController?.presentViewController(alertAction, animated: true, completion: nil)
+        navigationController?.present(alertAction, animated: true, completion: nil)
     }
 
-    func wishButtonDidClickAt(index:Int) {
-        let alertAction = UIAlertController(title: "Add to Wish List", message: "Are you sure you want to add this book to the Wish List", preferredStyle: .Alert)
-        let yesAction = UIAlertAction(title: "Add To Wish List", style: .Default) { (action) in
+    func wishButtonDidClickAt(_ index:Int) {
+        let alertAction = UIAlertController(title: "Add to Wish List", message: "Are you sure you want to add this book to the Wish List", preferredStyle: .alert)
+        let yesAction = UIAlertAction(title: "Add To Wish List", style: .default) { (action) in
             if let currentBooks = self.viewModel.currentBooks {
                 self.viewModel.addToWishList(currentBooks[index]) {
                     self.viewModel.fetchAllData({
@@ -203,17 +203,17 @@ extension BookListViewController : BookListTableViewCellDelegate {
                 }
             }
         }
-        let noAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let noAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
 
         alertAction.addAction(noAction)
         alertAction.addAction(yesAction)
-        navigationController?.presentViewController(alertAction, animated: true, completion: nil)
+        navigationController?.present(alertAction, animated: true, completion: nil)
     }
 }
 
 extension BookListViewController: BookAddViewControllerDelegate {
-    func bookAddViewController(controller : BookAddViewController, didSuccessfullyAddWithBook book: Book?, user: User?) {
-        controller.dismissViewControllerAnimated(true) {
+    func bookAddViewController(_ controller : BookAddViewController, didSuccessfullyAddWithBook book: Book?, user: User?) {
+        controller.dismiss(animated: true) {
 
             self.viewModel.fetchUser{
                 self.viewModel.fetchAllData {

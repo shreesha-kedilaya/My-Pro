@@ -11,7 +11,7 @@ class UserBookListViewModel {
     var ownedBooks: [Book]?
     var user : User?
 
-    func deleteBookAt(index : Int, completion : ViewModelCompletion) {
+    func deleteBookAt(_ index : Int, completion : @escaping ViewModelCompletion) {
 
         let ownedBook = ownedBooks?[index]
         let context = PersistenceStack.sharedInstance.createChildContext()
@@ -26,11 +26,11 @@ class UserBookListViewModel {
 
         let book = books?.last
 
-        context.performBlock {
+        context.perform {
             print(book)
             if let book = book {
-                context.deleteObject(book)
-                self.ownedBooks?.removeAtIndex(index)
+                context.delete(book)
+                self.ownedBooks?.remove(at: index)
                 context.AsynchronouslySave{
                     completion()
                 }

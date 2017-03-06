@@ -17,18 +17,18 @@ typealias AsyncCloser = () -> ()
  */
 final class Async {
     /// Asynchronous execution on a dispatch queue and returns immediately
-    class func main(closer: AsyncCloser) {
-        dispatch_async(dispatch_get_main_queue(), closer)
+    class func main(_ closer: @escaping AsyncCloser) {
+        DispatchQueue.main.async(execute: closer)
     }
     /// Asynchronous execution on a global queue and returns immediately
-    class func global(priority: dispatch_queue_priority_t = DISPATCH_QUEUE_PRIORITY_DEFAULT,  closer: AsyncCloser) {
-        dispatch_async(dispatch_get_global_queue(priority, 0), closer)
+    class func global(_ priority: dispatch_queue_priority_t = DispatchQueue.GlobalQueuePriority.default,  closer: AsyncCloser) {
+        DispatchQueue.global(priority: priority).async(execute: closer)
     }
     /// Asynchronous execution on a dispatch queue and returns after specified time interval
-    class func after(interval: Double, closer: AsyncCloser) {
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(Double(NSEC_PER_SEC) * interval))
+    class func after(_ interval: Double, closer: @escaping AsyncCloser) {
+        let time = DispatchTime.now() + Double(Int64(Double(NSEC_PER_SEC) * interval)) / Double(NSEC_PER_SEC)
         
-        dispatch_after(time, dispatch_get_main_queue(), closer)
+        DispatchQueue.main.asyncAfter(deadline: time, execute: closer)
     }
     
 }

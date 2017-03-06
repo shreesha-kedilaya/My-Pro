@@ -9,7 +9,7 @@
 import UIKit
 
 protocol UsersTableViewCellDelegate : class {
-    func usersTableViewCellDidSelectEditButtunAtIndex(index :Int)
+    func usersTableViewCellDidSelectEditButtunAtIndex(_ index :Int)
 }
 
 class UsersTableViewCell: UITableViewCell {
@@ -25,7 +25,7 @@ class UsersTableViewCell: UITableViewCell {
         // Initialization code
     }
 
-    @IBAction func editButtonDidClick(sender : UIButton) {
+    @IBAction func editButtonDidClick(_ sender : UIButton) {
         delegate?.usersTableViewCellDidSelectEditButtunAtIndex(index)
     }
 }

@@ -19,12 +19,12 @@ class MDCViewController: UIViewController, UICollectionViewDelegate, UICollectio
         
         // Do any additional setup after loading the view, typically from a nib.
     }
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let size = CGSize(width: 200, height: 400)
 
         flowLayout = MDCollectionViewFlowLayout(size: size, aspectRatio: 0.85)
-        flowLayout.scrollDirection = .Horizontal
+        flowLayout.scrollDirection = .horizontal
         flowLayout.minimumInteritemSpacing = 50
         flowLayout.minimumLineSpacing = 0.0
 
@@ -35,28 +35,28 @@ class MDCViewController: UIViewController, UICollectionViewDelegate, UICollectio
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(MDCCollectionViewCell.kReuseIdentifier, forIndexPath: indexPath) as? MDCCollectionViewCell
-        cell?.contentView.backgroundColor = UIColor.blueColor()
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MDCCollectionViewCell.kReuseIdentifier, for: indexPath) as? MDCCollectionViewCell
+        cell?.contentView.backgroundColor = UIColor.blue
         cell?.textLabel.text = "\(indexPath.item)"
-        cell?.textLabel.textColor = UIColor.whiteColor()
+        cell?.textLabel.textColor = UIColor.white
         return cell!
     }
 
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 30
     }
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.size.width - 20, height: collectionView.frame.size.height - 30)
     }
 
 
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
     }
 }
 

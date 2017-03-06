@@ -9,7 +9,7 @@
 import UIKit
 
 protocol BookRatingViewDelegate : class {
-    func bookRatingViewDidSelectRatingButtonsUptoIndex(ratingIndex : Int)
+    func bookRatingViewDidSelectRatingButtonsUptoIndex(_ ratingIndex : Int)
 }
 
 class BookRatingView: UIView {
@@ -24,7 +24,7 @@ class BookRatingView: UIView {
             if let ratingButtons = ratingButtons {
                 if initialRatings == 0 {
                     for i in 0..<rangeOfRatings {
-                        ratingButtons[i].backgroundColor = UIColor.lightGrayColor()
+                        ratingButtons[i].backgroundColor = UIColor.lightGray
                     }
                     firstButtonSelected = false
                 }
@@ -33,10 +33,10 @@ class BookRatingView: UIView {
     }
     var delegate: BookRatingViewDelegate?
 
-    private let highlightedColor = UIColor(red: 255/255, green: 225/255, blue: 93/255, alpha: 1.0)
+    fileprivate let highlightedColor = UIColor(red: 255/255, green: 225/255, blue: 93/255, alpha: 1.0)
 
-    private var firstButtonSelected = true
-    private var currentRating = 0
+    fileprivate var firstButtonSelected = true
+    fileprivate var currentRating = 0
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -52,8 +52,8 @@ class BookRatingView: UIView {
         sharedInit()
     }
 
-    private func sharedInit() {
-        backgroundColor = UIColor.clearColor()
+    fileprivate func sharedInit() {
+        backgroundColor = UIColor.clear
         addRatingButtons()
     }
 
@@ -62,11 +62,11 @@ class BookRatingView: UIView {
         addRatingButtons()
     }
 
-    private func addRatingButtons() {
+    fileprivate func addRatingButtons() {
         ratingButtons = []
 
         for view in subviews {
-            if view.isKindOfClass(UIButton) {
+            if view.isKind(of: UIButton.self) {
                 view.removeFromSuperview()
             }
         }
@@ -74,23 +74,23 @@ class BookRatingView: UIView {
         firstButtonSelected = rangeOfRatings > 1
         for i in 0..<rangeOfRatings {
             let button = UIButton(frame: CGRect(x: 2 + i.f * ((frame.size.width) / rangeOfRatings.f), y: 3.f, width: ((frame.size.width)/5) - 2.f, height: (frame.size.height) - 6.f))
-            button.backgroundColor = i > (initialRatings - 1) ? UIColor.lightGrayColor() : highlightedColor
+            button.backgroundColor = i > (initialRatings - 1) ? UIColor.lightGray : highlightedColor
             button.layer.cornerRadius = button.frame.height / 2
             button.layer.masksToBounds = true
             button.tag = i
-            button.addTarget(self, action: #selector(BookRatingView.ratingButtonDidClick(_:)), forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(BookRatingView.ratingButtonDidClick(_:)), for: .touchUpInside)
             addSubview(button)
             ratingButtons?.append(button)
         }
     }
 
-    func ratingButtonDidClick(button : UIButton) {
+    func ratingButtonDidClick(_ button : UIButton) {
 
         updateRatingButtonDidClickAtIndex(button.tag)
     }
 
 
-    private func updateRatingButtonDidClickAtIndex(index : Int)  {
+    fileprivate func updateRatingButtonDidClickAtIndex(_ index : Int)  {
 
         currentRating = index + 1
         var ratingIndex = index + 1
@@ -103,7 +103,7 @@ class BookRatingView: UIView {
                     ratingIndex = index + 1
                 }else if currentRating == 1 && index + 1 == currentRating {
                     for i in 0..<rangeOfRatings {
-                        ratingButtons[i].backgroundColor = UIColor.lightGrayColor()
+                        ratingButtons[i].backgroundColor = UIColor.lightGray
                     }
                     firstButtonSelected = false
                     ratingIndex = 0
@@ -113,7 +113,7 @@ class BookRatingView: UIView {
                     }
 
                     for i in (index+1)..<rangeOfRatings {
-                        ratingButtons[i].backgroundColor = UIColor.lightGrayColor()
+                        ratingButtons[i].backgroundColor = UIColor.lightGray
                     }
                     firstButtonSelected = true
                     ratingIndex = index + 1
