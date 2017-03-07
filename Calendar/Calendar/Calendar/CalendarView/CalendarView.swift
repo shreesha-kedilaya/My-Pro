@@ -155,6 +155,7 @@ class CalendarView: UIView {
     fileprivate var currentPanningPoint = CGPoint(x: 0, y: 0)
     fileprivate var currentPanningIndexPath = IndexPath(item: 0, section: 0)
     fileprivate var currentDraggingPath = PanningDirection.forward
+    var savedDates: [Foundation.Date] = []
 
     //MARK:Public properties
 
@@ -350,13 +351,37 @@ class CalendarView: UIView {
             highlightTheCellAtPoint(locationInView)
         case .ended:
             calendarCollectionView.isScrollEnabled = true
+            saveDates()
             resetEveryValues()
         case .cancelled ,.failed:
             calendarCollectionView.isScrollEnabled = true
+            saveDates()
             resetEveryValues()
         default :
             calendarCollectionView.isScrollEnabled = true
+            saveDates()
             resetEveryValues()
+        }
+    }
+
+    fileprivate func saveDates() {
+        let start = panStartingIndexPath.item > currentPanningIndexPath.item ? currentPanningIndexPath.item: panStartingIndexPath.item
+        let end = panStartingIndexPath.item < currentPanningIndexPath.item ? currentPanningIndexPath.item: panStartingIndexPath.item
+
+        saveDatesBetween(start: start, end: end)
+    }
+
+    fileprivate func saveDatesBetween(start: Int, end: Int) {
+        for date in start+1...end+1 {
+            nsDateComponents.day = date
+            nsDateComponents.month = currentMonth
+            nsDateComponents.year = currentYear
+
+            let date = calendar.date(from: nsDateComponents)
+
+            dateFormatter.dateFormat = "MMMM , dd , yyyy"
+
+            print(dateFormatter.string(from: date!))
         }
     }
 
