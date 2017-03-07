@@ -326,7 +326,7 @@ class CalendarView: UIView {
 
         calendarCollectionView.addGestureRecognizer(calendarPanGesture)
 
-        calendarPanGesture.minimumPressDuration = 0.0
+        calendarPanGesture.minimumPressDuration = 0.05
         calendarPanGesture.delegate = self
         calendarPanGesture.allowableMovement = max(bounds.size.height, bounds.size.width)
         calendarPanGesture.isEnabled = true
@@ -402,42 +402,112 @@ class CalendarView: UIView {
 
         panningDirection = probablePanningPoint
 
-        var highlight = false
+        let highlightingIndexPaths: (Int, Int) = (panStartingIndexPath.item, indexPath.item)
+        let unhighlightingIndexpaths: (Int, Int) = (indexPath.item, currentPanningIndexPath.item)
 
-        switch (currentDraggingPath, panningDirection) {
-        case (.forward, .forward), (.backward, .backward):
-            highlight = true
-        case (.forward, .backward), (.backward, .forward):
-            highlight = false
-        }
+        let start = highlightingIndexPaths.0 > highlightingIndexPaths.1 ? highlightingIndexPaths.1: highlightingIndexPaths.0
+        let end = highlightingIndexPaths.0 < highlightingIndexPaths.1 ? highlightingIndexPaths.1: highlightingIndexPaths.0
 
-        var startingIndexpath: IndexPath = IndexPath(item: 0, section: 0)
+        let start1 = unhighlightingIndexpaths.0 > unhighlightingIndexpaths.1 ? unhighlightingIndexpaths.1: unhighlightingIndexpaths.0
+        let end1 = unhighlightingIndexpaths.0 < unhighlightingIndexpaths.1 ? unhighlightingIndexpaths.1: unhighlightingIndexpaths.0
 
-        switch (currentDraggingPath, panningDirection) {
-        case (.forward, .forward), (.backward, .backward):
-            startingIndexpath = panStartingIndexPath
-        case (.forward, .backward), (.backward, .forward):
-            startingIndexpath = currentPanningIndexPath
-        }
-
-        let start = indexPath.item < startingIndexpath.item ? indexPath.item: startingIndexpath.item
-        let end = indexPath.item > startingIndexpath.item ? indexPath.item: startingIndexpath.item
-
-        for item in (start...end) {
-            if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
-                cell.highlightedItem = item == panStartingIndexPath.item ? true : highlight
-            }
-        }
-
-        if indexPath.item < startingIndexpath.item && currentDraggingPath == .forward && panningDirection == .backward {
-            for item in (indexPath.item...panStartingIndexPath.item) {
-                let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell
-                cell?.highlightedItem = true
-            }
-        }
+        unHighlight(start: start1, end: end1, indexPath: indexPath)
+        highlight(start: start, end: end, indexPath: indexPath)
 
         currentPanningPoint = point
         currentPanningIndexPath = indexPath
+    }
+
+    fileprivate func highlight(start: Int, end: Int, indexPath: IndexPath) {
+        switch panningDirection {
+        case .forward:
+            for item in (start...end) {
+                if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
+                    cell.highlightedItem = true
+                }
+            }
+        case .backward:
+            for item in (start...end).reversed() {
+                if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
+                    cell.highlightedItem = true
+                }
+            }
+        }
+    }
+
+    fileprivate func unHighlight(start: Int, end: Int, indexPath: IndexPath) {
+
+        switch panningDirection {
+        case .forward:
+            for item in (start...end) {
+                var highlight = false
+                if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
+                    highlight = false
+                    if item == indexPath.item {
+                        switch panningDirection {
+                        case .forward:
+                            if currentDraggingPath == .forward {
+                                highlight = true
+                            }
+                        case .backward:
+                            if currentDraggingPath == .backward {
+                                highlight = true
+                            }
+                        }
+                    }
+
+                    if item == panStartingIndexPath.item {
+                        highlight = true
+                    }
+
+                    cell.highlightedItem = highlight
+                }
+            }
+        case .backward:
+            for item in (start...end).reversed() {
+                var highlight = false
+                if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
+                    highlight = false
+                    if item == indexPath.item {
+                        switch panningDirection {
+                        case .forward:
+                            if currentDraggingPath == .forward {
+                                highlight = true
+                            }
+                        case .backward:
+                            if currentDraggingPath == .backward {
+                                highlight = true
+                            }
+                        }
+                    }
+
+                    if item == panStartingIndexPath.item {
+                        highlight = true
+                    }
+                    
+                    cell.highlightedItem = highlight
+                }
+            }
+        }
+
+    }
+
+    fileprivate func ifColumnAscending(point: CGPoint) -> Bool {
+        return point.x > currentPanningPoint.x
+    }
+
+    fileprivate func ifRowAscending(_ indexPath: IndexPath) -> Bool {
+        let draggingRowColumn = getTheCurrentRowColumnFor(indexPath)
+        let previousRowColumn = getTheCurrentRowColumnFor(currentPanningIndexPath)
+
+        return draggingRowColumn.0 > previousRowColumn.0
+    }
+
+    fileprivate func ifRowStaysSame(_ indexPath: IndexPath) -> Bool {
+        let draggingRowColumn = getTheCurrentRowColumnFor(indexPath)
+        let previousRowColumn = getTheCurrentRowColumnFor(currentPanningIndexPath)
+
+        return draggingRowColumn.0 == previousRowColumn.0
     }
 
     fileprivate func directionFor(_ indexPath: IndexPath, point: CGPoint) -> PanningDirection {
