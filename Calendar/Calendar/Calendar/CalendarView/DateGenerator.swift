@@ -47,6 +47,11 @@ extension DateComponent {
         let total = (calendar as NSCalendar).range(of: .weekOfMonth, in: .month, for: getActualDatefromCalendar()).length
         return total
     }
+
+    func getNumberOfWeeksFor(date: Foundation.Date) -> Int {
+        let total = (calendar as NSCalendar).range(of: .weekOfMonth, in: .month, for: date).length
+        return total
+    }
 }
 
 

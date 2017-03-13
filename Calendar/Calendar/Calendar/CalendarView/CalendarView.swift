@@ -151,11 +151,12 @@ class CalendarView: UIView {
     fileprivate var yearMonthButton : UIButton!
     fileprivate var panningDirection = PanningDirection.forward
     fileprivate var panStartingIndexPath = IndexPath(item: 0, section: 0)
+    fileprivate var heightConstraint: NSLayoutConstraint!
 
     fileprivate var currentPanningPoint = CGPoint(x: 0, y: 0)
     fileprivate var currentPanningIndexPath = IndexPath(item: 0, section: 0)
     fileprivate var currentDraggingPath = PanningDirection.forward
-    var savedDates: [Foundation.Date] = []
+    var highlightedDates: [Foundation.Date] = []
 
     //MARK:Public properties
 
@@ -207,7 +208,8 @@ class CalendarView: UIView {
         currentSection = 1
         backgroundColor = UIColor.blue
         addAttributesToFlowLayout()
-
+        createTheDateGenerator()
+        changeTheDateComponent()
 
         if let calendarCollectionView = calendarCollectionView {
             calendarCollectionView.backgroundColor = UIColor.blue
@@ -215,7 +217,6 @@ class CalendarView: UIView {
             calendarCollectionView.frame = bounds
             calendarCollectionView.dataSource = self
             calendarCollectionView.isPagingEnabled = true
-            calendarCollectionView.backgroundColor = UIColor.blue
             calendarCollectionView.register(CalendarViewCell.self, forCellWithReuseIdentifier: "Cell")
         }
 
@@ -227,8 +228,7 @@ class CalendarView: UIView {
         //The week labels should be created after the calendar is initialized
         createWeekLabels()
 
-        createTheDateGenerator()
-        changeTheDateComponent()
+        heightConstraint.constant = (bounds.width / 7) * dateComponent.getNumberOfWeekForCurrentDate().f
 
         addLongGestureToTheCollectionView()
         changeTheTextOfYearMonthLabel()
@@ -318,6 +318,65 @@ class CalendarView: UIView {
         }
     }
 
+    fileprivate func addAttributesToFlowLayout() {
+
+        if let _ = calendarCollectionView {
+            calendarCollectionView.removeFromSuperview()
+            self.calendarCollectionView = nil
+        }
+        if let _ = flowLayout {
+        } else {
+            flowLayout = CalendarFlowLayout()
+        }
+
+        flowLayout?.scrollDirection = .vertical
+        flowLayout?.itemSize = CGSize(width: bounds.size.width / 7, height: bounds.size.height / 5)
+        flowLayout?.minimumInteritemSpacing = 0.0
+        flowLayout?.minimumLineSpacing = 0.0
+
+        //TODO : remove the horizontal scroll indicator
+
+        if let flowLayout = flowLayout {
+            calendarCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
+            calendarCollectionView.translatesAutoresizingMaskIntoConstraints = false
+            collectionViewWidth = calendarCollectionView.frame.size.width
+            collectionViewHeight = calendarCollectionView.frame.size.height
+        }
+    }
+
+    fileprivate func addSubviews() {
+        if let calendarCollectionView = calendarCollectionView {
+            addSubview(calendarCollectionView)
+        }
+        addSubview(yearMonthButton)
+    }
+
+    fileprivate func addConstraints() {
+        addConstraintToCalendar()
+        addConstraintToMonthAndYearLabels()
+    }
+
+    fileprivate func addConstraintToMonthAndYearLabels() {
+
+        let topConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
+        let leadingConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 10)
+        let heightConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
+
+        addConstraints([topConstraint, leadingConstraint])
+        yearMonthButton.addConstraint(heightConstraint)
+    }
+    //MARK: adding constraint calendar collection view and self
+    fileprivate func addConstraintToCalendar() {
+        if let calendarCollectionView = calendarCollectionView {
+
+            let leading = NSLayoutConstraint(item: calendarCollectionView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0)
+            let traling = NSLayoutConstraint(item: calendarCollectionView, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0)
+            heightConstraint = NSLayoutConstraint(item: calendarCollectionView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
+
+            addConstraints([leading,traling,heightConstraint])
+        }
+    }
+
     fileprivate func addLongGestureToTheCollectionView() {
         if let _ = calendarPanGesture {
 
@@ -327,7 +386,7 @@ class CalendarView: UIView {
 
         calendarCollectionView.addGestureRecognizer(calendarPanGesture)
 
-        calendarPanGesture.minimumPressDuration = 0.05
+        calendarPanGesture.minimumPressDuration = 0.1
         calendarPanGesture.delegate = self
         calendarPanGesture.allowableMovement = max(bounds.size.height, bounds.size.width)
         calendarPanGesture.isEnabled = true
@@ -351,38 +410,52 @@ class CalendarView: UIView {
             highlightTheCellAtPoint(locationInView)
         case .ended:
             calendarCollectionView.isScrollEnabled = true
-            saveDates()
             resetEveryValues()
         case .cancelled ,.failed:
             calendarCollectionView.isScrollEnabled = true
-            saveDates()
             resetEveryValues()
         default :
             calendarCollectionView.isScrollEnabled = true
-            saveDates()
             resetEveryValues()
         }
     }
 
-    fileprivate func saveDates() {
-        let start = panStartingIndexPath.item > currentPanningIndexPath.item ? currentPanningIndexPath.item: panStartingIndexPath.item
-        let end = panStartingIndexPath.item < currentPanningIndexPath.item ? currentPanningIndexPath.item: panStartingIndexPath.item
+    fileprivate func saveDates(item: Int, save: Bool) {
 
-        saveDatesBetween(start: start, end: end)
+        nsDateComponents.day = item + 1
+        nsDateComponents.month = currentMonth
+        nsDateComponents.year = currentYear
+
+        dateFormatter.dateFormat = "MMMM, dd, yyyy"
+
+        if let date = calendar.date(from: nsDateComponents) {
+            if save {
+                if !highlightedDates.contains(date) {
+                    highlightedDates.append(date)
+                }
+            } else {
+                if let indexOf = highlightedDates.index(of: date) {
+                    highlightedDates.remove(at: indexOf)
+                }
+            }
+        }
+
+        highlightedDates.sort()
     }
 
-    fileprivate func saveDatesBetween(start: Int, end: Int) {
-        for date in start+1...end+1 {
-            nsDateComponents.day = date
-            nsDateComponents.month = currentMonth
-            nsDateComponents.year = currentYear
+    fileprivate func isHighlightedDateAt(indexPath: IndexPath) -> Bool {
+        nsDateComponents.day = indexPath.item + 1
+        nsDateComponents.month = getCurrentMonthForSection(indexPath.section + 1, month: true)
+        nsDateComponents.year = getCurrentMonthForSection(indexPath.section + 1, month: false)
 
-            let date = calendar.date(from: nsDateComponents)
-
-            dateFormatter.dateFormat = "MMMM , dd , yyyy"
-
-            print(dateFormatter.string(from: date!))
+        var retValue = false
+        if let date = calendar.date(from: nsDateComponents) {
+            if highlightedDates.contains(date) {
+                retValue = true
+            }
         }
+
+        return retValue
     }
 
     fileprivate func resetEveryValues() {
@@ -400,6 +473,7 @@ class CalendarView: UIView {
 
         if let cell = calendarCollectionView.cellForItem(at: indexPath) as? CalendarViewCell {
             cell.highlightedItem = !cell.highlightedItem
+            saveDates(item: indexPath.item, save: cell.highlightedItem)
         }
 
         panStartingIndexPath = indexPath
@@ -450,12 +524,16 @@ class CalendarView: UIView {
                 if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
                     cell.highlightedItem = true
                 }
+
+                saveDates(item: item, save: true)
             }
         case .backward:
             for item in (start...end).reversed() {
                 if let cell = calendarCollectionView.cellForItem(at: IndexPath(item: item, section: indexPath.section)) as? CalendarViewCell {
                     cell.highlightedItem = true
                 }
+
+                saveDates(item: item, save: true)
             }
         }
     }
@@ -485,6 +563,8 @@ class CalendarView: UIView {
                         highlight = true
                     }
 
+                    saveDates(item: item, save: highlight)
+
                     cell.highlightedItem = highlight
                 }
             }
@@ -509,6 +589,8 @@ class CalendarView: UIView {
                     if item == panStartingIndexPath.item {
                         highlight = true
                     }
+
+                    saveDates(item: item, save: highlight)
                     
                     cell.highlightedItem = highlight
                 }
@@ -616,6 +698,10 @@ class CalendarView: UIView {
             calendarCollectionView.collectionViewLayout = layout
         }
 
+//        if let date = calendar.date(from: nsDateComponents) {
+            heightConstraint.constant = (bounds.width / 7) * 6
+//        }
+
         scrollInitially()
     }
 
@@ -623,64 +709,6 @@ class CalendarView: UIView {
         if !scrolledInitially {
             calendarCollectionView.setContentOffset(CGPoint(x: calendarCollectionView.bounds.width, y: 0.f), animated: false)
             scrolledInitially = true
-        }
-    }
-    fileprivate func addAttributesToFlowLayout() {
-
-        if let _ = calendarCollectionView {
-            calendarCollectionView.removeFromSuperview()
-            self.calendarCollectionView = nil
-        }
-        if let _ = flowLayout {
-        } else {
-            flowLayout = CalendarFlowLayout()
-        }
-
-        flowLayout?.scrollDirection = .horizontal
-        flowLayout?.itemSize = CGSize(width: bounds.size.width / 7, height: bounds.size.height / 5)
-        flowLayout?.minimumInteritemSpacing = 0.0
-        flowLayout?.minimumLineSpacing = 0.0
-
-        //TODO : remove the horizontal scroll indicator
-
-        if let flowLayout = flowLayout {
-            calendarCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flowLayout)
-            calendarCollectionView.translatesAutoresizingMaskIntoConstraints = false
-            collectionViewWidth = calendarCollectionView.frame.size.width
-            collectionViewHeight = calendarCollectionView.frame.size.height
-        }
-    }
-
-    fileprivate func addSubviews() {
-        if let calendarCollectionView = calendarCollectionView {
-            addSubview(calendarCollectionView)
-        }
-        addSubview(yearMonthButton)
-    }
-
-    fileprivate func addConstraints() {
-        addConstraintToCalendar()
-        addConstraintToMonthAndYearLabels()
-    }
-
-    fileprivate func addConstraintToMonthAndYearLabels() {
-
-        let topConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
-        let leadingConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 10)
-        let heightConstraint = NSLayoutConstraint(item: yearMonthButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
-
-        addConstraints([topConstraint, leadingConstraint])
-        yearMonthButton.addConstraint(heightConstraint)
-    }
-    //MARK: adding constraint calendar collection view and self
-    fileprivate func addConstraintToCalendar() {
-        if let calendarCollectionView = calendarCollectionView {
-
-            let leading = NSLayoutConstraint(item: calendarCollectionView, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0)
-            let traling = NSLayoutConstraint(item: calendarCollectionView, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0)
-            let bottom = NSLayoutConstraint(item: calendarCollectionView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
-
-            addConstraints([leading,traling,bottom])
         }
     }
 
@@ -715,6 +743,7 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
             cell.dateButton.backgroundColor = UIColor.red
             cell.setAsCurrentDateItem = true
         }
+
         return cell
     }
 
@@ -751,6 +780,7 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
 
         return (Int(currentNumberOfIterationForCurrentDay), indexPath)
     }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
     }
@@ -760,7 +790,7 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
+        (cell as? CalendarViewCell)?.highlightedItem = isHighlightedDateAt(indexPath: indexPath)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -830,7 +860,7 @@ extension CalendarView : UICollectionViewDataSource, UICollectionViewDelegate, U
 
             self.reloadData()
             self.flowLayout?.currentIterationIndex = self.numberOfIterations
-            print("numberOfIterations: ", self.numberOfIterations)
+//            print("numberOfIterations: ", self.numberOfIterations)
             self.flowLayout?.invalidateLayout()
         }
     }

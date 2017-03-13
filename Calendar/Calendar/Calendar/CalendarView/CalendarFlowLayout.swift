@@ -80,12 +80,9 @@ class CalendarFlowLayout: UICollectionViewFlowLayout {
                 nsDateComponents.month = getCurrentMonthForSection(section, month: true)
                 nsDateComponents.year = getCurrentMonthForSection(section, month: false)
 
-                print("nsDateComponents.month: ", nsDateComponents.month ?? 1)
-                print("nsDateComponents.year: ", nsDateComponents.year ?? 1)
-
                 let firstDay = dateComponent.startingRangeOfDay() - 1
 
-                let heightForThisSectionItems = collectionView.frame.height / dateComponent.getNumberOfWeekForCurrentDate().f
+                let heightForThisSectionItems = collectionView.frame.width / 7
 
                 let numberOfItems = collectionView.numberOfItems(inSection: section)
                 var xOffset = (section.f * collectionView.frame.size.width) + firstDay.f * itemSize.width
